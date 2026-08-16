@@ -26,94 +26,115 @@ const rooms = new Map();
 
 wss.on("connection", (ws) => {
     ws.room = null;
+    ws.id = null;
 
-    ws.on("message", (data) => {
+    ws.on("message", (rawMessage) => {
         try {
-            const message = JSON.parse(data.toString());
+            const message = JSON.parse(rawMessage.toString());
 
             // JOIN ROOM
             if (message.type === "join") {
-                const roomId = message.room;
+                const { room: roomId, userId, userName } = message;
 
-                if (!roomId) {
-                    ws.send(JSON.stringify({ type: "error", message: "Room ID haipo" }));
+                if (!roomId || !userId) {
+                    ws.send(JSON.stringify({ type: "error", message: "Taarifa za room au mtumiaji hazijakamilika" }));
                     return;
                 }
 
                 ws.room = roomId;
+                ws.id = userId;
+                ws.userName = userName || "Participant";
 
                 if (!rooms.has(roomId)) {
-                    rooms.set(roomId, new Set());
+                    rooms.set(roomId, new Map());
                 }
 
                 const room = rooms.get(roomId);
+                
+                // Mfahamishe mtumiaji mpya kuhusu washiriki waliopo kabla yake
+                const existingUsers = [];
+                room.forEach((client, id) => {
+                    existingUsers.push({ id, name: client.userName });
+                });
 
-                if (room.size >= 2) {
-                    ws.send(JSON.stringify({
-                        type: "room-full",
-                        message: "Room imejaa. Kwa sasa ni ya watu wawili tu."
-                    }));
-                    return;
-                }
-
-                room.add(ws);
+                room.set(userId, ws);
 
                 ws.send(JSON.stringify({
                     type: "joined",
                     room: roomId,
-                    users: room.size
+                    users: existingUsers
                 }));
 
-                // Mjulishe mtu wa kwanza kuwa mshiriki mpya ameingia
-                if (room.size > 1) {
-                    room.forEach((client) => {
-                        if (client !== ws && client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({ type: "user-joined" }));
-                        }
-                    });
+                // Wajulishe wengine kuwa mtumiaji mpya ameingia
+                broadcastToRoom(roomId, ws, {
+                    type: "user-joined",
+                    userId: ws.id,
+                    userName: ws.userName
+                });
+                return;
+            }
+
+            // SIGNALING (Offer, Answer, ICE Candidates Target-Specific)
+            if (message.type === "signal") {
+                const { target, data } = message;
+                if (!ws.room) return;
+                const room = rooms.get(ws.room);
+                if (room && room.has(target)) {
+                    const targetClient = room.get(target);
+                    if (targetClient.readyState === WebSocket.OPEN) {
+                        targetClient.send(JSON.stringify({
+                            type: "signal",
+                            sender: ws.id,
+                            data: data
+                        }));
+                    }
                 }
                 return;
             }
 
-            // SIGNALING (Offer, Answer, ICE Candidates)
-            if (message.type === "signal") {
+            // CHAT MESSAGES & RAISE HAND BROADCAST
+            if (message.type === "chat" || message.type === "raise-hand") {
                 if (!ws.room) return;
-                const room = rooms.get(ws.room);
-                if (!room) return;
-
-                room.forEach((client) => {
-                    if (client !== ws && client.readyState === WebSocket.OPEN) {
-                        client.send(JSON.stringify({
-                            type: "signal",
-                            data: message.data
-                        }));
-                    }
+                broadcastToRoom(ws.room, null, {
+                    ...message,
+                    senderId: ws.id,
+                    senderName: ws.userName
                 });
                 return;
             }
+
         } catch (error) {
             console.error("WebSocket Error:", error);
         }
     });
 
     ws.on("close", () => {
-        if (!ws.room) return;
+        if (!ws.room || !ws.id) return;
         const room = rooms.get(ws.room);
-        if (!room) return;
+        if (room) {
+            room.delete(ws.id);
+            broadcastToRoom(ws.room, ws, {
+                type: "user-left",
+                userId: ws.id
+            });
 
-        room.delete(ws);
-
-        room.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({ type: "user-left" }));
+            if (room.size === 0) {
+                rooms.delete(ws.room);
             }
-        });
-
-        if (room.size === 0) {
-            rooms.delete(ws.room);
         }
     });
 });
+
+function broadcastToRoom(roomId, senderWs, payload) {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
+    room.forEach((client) => {
+        if (client !== senderWs && client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(payload));
+        }
+    });
+}
 
 // KEEP-ALIVE SERVER ON RENDER
 server.listen(PORT, () => {
