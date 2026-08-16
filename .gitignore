@@ -1,0 +1,5 @@
+echo "*" > .gitignore
+echo "!.gitignore" >> .gitignore
+echo "!server.js" >> .gitignore
+echo "!public/" >> .gitignore
+echo "!public/index.html" >> .gitignore
