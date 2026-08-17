@@ -260,7 +260,6 @@
             flex-direction: column;
             gap: 6px;
             background: #0f172a;
-            padding-bottom: 90px; /* Space for input on mobile */
         }
         .msg-box {
             background: #1e293b;
@@ -347,31 +346,120 @@
         .chat-input-area button:hover {
             background: #0369a1;
         }
-        .controls-bar {
+        
+        /* ===== CONTROLS BAR - IMPROVED ===== */
+        .controls-wrapper {
             position: fixed;
             bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: auto;
+            max-width: 95%;
+        }
+        .controls-bar {
             background: rgba(30, 41, 59, 0.92);
             backdrop-filter: blur(16px);
-            padding: 6px 12px;
-            border-radius: 40px;
+            padding: 8px 14px;
+            border-radius: 50px;
             display: flex;
-            gap: 6px;
+            gap: 8px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-            z-index: 25;
             flex-wrap: nowrap;
             justify-content: center;
+            transition: all 0.3s ease;
+            width: auto;
+        }
+        .controls-bar.compact {
+            padding: 6px 10px;
+            gap: 4px;
+        }
+        .controls-bar.compact .btn-ctrl {
+            width: 34px;
+            height: 34px;
+            font-size: 12px;
+        }
+        .controls-bar.compact .btn-ctrl .btn-label {
+            display: none;
+        }
+        .controls-bar .btn-ctrl .btn-label {
+            font-size: 9px;
+            margin-left: 4px;
+            opacity: 0.7;
         }
         .btn-ctrl {
-            width: 38px;
-            height: 38px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             border: none;
             background: #334155;
             color: #f8fafc;
-            font-size: 14px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            touch-action: manipulation;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .btn-ctrl:active {
+            transform: scale(0.92);
+        }
+        .btn-ctrl:hover {
+            background: #475569;
+        }
+        .btn-ctrl.off {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-ctrl.active {
+            background: #0284c7;
+            color: white;
+        }
+        .btn-ctrl.danger {
+            background: #dc2626;
+            color: white;
+        }
+        .btn-ctrl.danger:hover {
+            background: #b91c1c;
+        }
+        /* Toggle button for compact/expand */
+        .toggle-controls-btn {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: none;
+            touch-action: manipulation;
+        }
+        .toggle-controls-btn:hover {
+            background: rgba(30, 41, 59, 0.9);
+            color: #fff;
+        }
+        .toggle-controls-btn i {
+            margin-right: 4px;
+        }
+
+        .btn-ctrl {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: #334155;
+            color: #f8fafc;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -401,6 +489,7 @@
         .btn-ctrl.danger:hover {
             background: #b91c1c;
         }
+
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -469,7 +558,7 @@
         }
         .zoom-hint {
             position: fixed;
-            bottom: 70px;
+            bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.7);
@@ -488,7 +577,7 @@
             display: block;
         }
 
-        /* ===== RESPONSIVE - SMALL PHONES ===== */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .header {
                 height: 44px;
@@ -530,47 +619,70 @@
                 bottom: 5px;
                 left: 5px;
             }
-            /* Controls bar - smaller on mobile */
-            .controls-bar {
+            
+            /* Controls - bigger and better on mobile */
+            .controls-wrapper {
                 bottom: 10px;
+                gap: 6px;
+            }
+            .controls-bar {
+                padding: 6px 12px;
+                gap: 6px;
+                border-radius: 40px;
+            }
+            .controls-bar.compact {
                 padding: 4px 8px;
-                gap: 4px;
+                gap: 3px;
+            }
+            .controls-bar.compact .btn-ctrl {
+                width: 32px;
+                height: 32px;
+                font-size: 11px;
             }
             .btn-ctrl {
-                width: 34px;
-                height: 34px;
-                font-size: 13px;
+                width: 40px;
+                height: 40px;
+                font-size: 15px;
             }
-            /* Chat sidebar - full width on mobile */
+            .btn-ctrl .btn-label {
+                display: none !important;
+            }
+            
+            /* Toggle button visible on mobile */
+            .toggle-controls-btn {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                font-size: 10px;
+                padding: 3px 10px;
+            }
+            
+            /* Chat sidebar */
             .chat-sidebar {
                 max-width: 100%;
                 width: 100%;
             }
-            /* Chat messages - extra bottom padding for input */
             .chat-messages {
-                padding-bottom: 80px;
+                padding-bottom: 60px;
             }
-            /* Chat input - positioned above controls */
             .chat-input-area {
                 padding: 6px 10px;
-                background: #0f172a;
-                border-top: 1px solid #334155;
                 position: sticky;
-                bottom: 56px; /* Space above controls */
-                z-index: 10;
+                bottom: 0;
                 background: rgba(15, 23, 42, 0.95);
                 backdrop-filter: blur(8px);
+                border-top: 1px solid #334155;
+                z-index: 10;
             }
             .chat-input-area input {
-                font-size: 13px;
+                font-size: 14px;
                 padding: 10px 14px;
-                min-height: 40px;
-                background: #1e293b;
+                min-height: 42px;
             }
             .chat-input-area button {
-                min-height: 40px;
-                min-width: 44px;
-                font-size: 15px;
+                min-height: 42px;
+                min-width: 46px;
+                font-size: 16px;
                 padding: 0 16px;
             }
             .modal-card {
@@ -583,7 +695,7 @@
                 font-size: 11px;
             }
             .zoom-hint {
-                bottom: 62px;
+                bottom: 72px;
                 font-size: 10px;
                 padding: 4px 12px;
             }
@@ -596,36 +708,44 @@
                 grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
                 grid-auto-rows: minmax(80px, 1fr);
             }
-            .btn-ctrl {
-                width: 30px;
-                height: 30px;
-                font-size: 11px;
-            }
             .controls-bar {
-                gap: 3px;
+                padding: 4px 8px;
+                gap: 4px;
+            }
+            .controls-bar.compact {
                 padding: 3px 6px;
-                bottom: 8px;
+                gap: 2px;
+            }
+            .controls-bar.compact .btn-ctrl {
+                width: 28px;
+                height: 28px;
+                font-size: 10px;
+            }
+            .btn-ctrl {
+                width: 36px;
+                height: 36px;
+                font-size: 13px;
+            }
+            .toggle-controls-btn {
+                font-size: 9px;
+                padding: 2px 8px;
             }
             .chat-input-area input {
-                font-size: 12px;
+                font-size: 13px;
                 padding: 8px 12px;
-                min-height: 36px;
+                min-height: 38px;
             }
             .chat-input-area button {
-                min-height: 36px;
-                min-width: 38px;
-                font-size: 13px;
+                min-height: 38px;
+                min-width: 40px;
+                font-size: 14px;
                 padding: 0 12px;
             }
-            .chat-input-area {
-                bottom: 48px;
-                padding: 4px 8px;
-            }
             .chat-messages {
-                padding-bottom: 70px;
+                padding-bottom: 50px;
             }
             .zoom-hint {
-                bottom: 54px;
+                bottom: 64px;
                 font-size: 9px;
                 padding: 3px 10px;
             }
@@ -695,13 +815,31 @@
     <!-- ZOOM HINT -->
     <div id="zoomHint" class="zoom-hint">Bonyeza tile kuizoom • Bonyeza tena kurudi</div>
 
-    <!-- CONTROLS -->
-    <div class="controls-bar">
-        <button id="micBtn" class="btn-ctrl off" title="Mic"><i class="fa-solid fa-microphone-slash"></i></button>
-        <button id="cameraBtn" class="btn-ctrl off" title="Camera"><i class="fa-solid fa-video-slash"></i></button>
-        <button id="handBtn" class="btn-ctrl" title="Hand"><i class="fa-solid fa-hand"></i></button>
-        <button id="chatBtn" class="btn-ctrl" title="Chat"><i class="fa-solid fa-message"></i></button>
-        <button id="endBtn" class="btn-ctrl danger" title="Leave"><i class="fa-solid fa-phone-slash"></i></button>
+    <!-- CONTROLS WRAPPER -->
+    <div class="controls-wrapper">
+        <!-- Toggle button for compact/expand -->
+        <button id="toggleControlsBtn" class="toggle-controls-btn">
+            <i class="fa-solid fa-chevron-left"></i> Compact
+        </button>
+        
+        <!-- Controls Bar -->
+        <div id="controlsBar" class="controls-bar">
+            <button id="micBtn" class="btn-ctrl off" title="Mic">
+                <i class="fa-solid fa-microphone-slash"></i>
+            </button>
+            <button id="cameraBtn" class="btn-ctrl off" title="Camera">
+                <i class="fa-solid fa-video-slash"></i>
+            </button>
+            <button id="handBtn" class="btn-ctrl" title="Hand">
+                <i class="fa-solid fa-hand"></i>
+            </button>
+            <button id="chatBtn" class="btn-ctrl" title="Chat">
+                <i class="fa-solid fa-message"></i>
+            </button>
+            <button id="endBtn" class="btn-ctrl danger" title="Leave">
+                <i class="fa-solid fa-phone-slash"></i>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -727,6 +865,8 @@
             const msgInput = document.getElementById("msgInput");
             const sendMsgBtn = document.getElementById("sendMsgBtn");
             const zoomHint = document.getElementById("zoomHint");
+            const controlsBar = document.getElementById("controlsBar");
+            const toggleBtn = document.getElementById("toggleControlsBtn");
 
             // Create local tile
             const localTile = document.createElement("div");
@@ -770,6 +910,7 @@
             let isHandRaised = false;
             let isZoomed = false;
             let zoomedTileId = null;
+            let isCompact = false;
             const peerConnections = new Map();
 
             const rtcConfig = {
@@ -778,6 +919,17 @@
                     { urls: "stun:stun1.l.google.com:19302" }
                 ]
             };
+
+            // ---- TOGGLE CONTROLS ----
+            toggleBtn.addEventListener("click", function() {
+                isCompact = !isCompact;
+                controlsBar.classList.toggle("compact", isCompact);
+                if (isCompact) {
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i> Expand';
+                } else {
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i> Compact';
+                }
+            });
 
             // ---- MEDIA ----
             async function initMedia() {
@@ -1054,8 +1206,24 @@
             };
 
             // ---- CHAT ----
-            chatBtn.onclick = () => chatSidebar.classList.toggle("open");
-            closeChatBtn.onclick = () => chatSidebar.classList.remove("open");
+            chatBtn.onclick = () => {
+                chatSidebar.classList.toggle("open");
+                // Auto-compact controls when chat opens on mobile
+                if (window.innerWidth <= 640 && !isCompact) {
+                    isCompact = true;
+                    controlsBar.classList.add("compact");
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i> Expand';
+                }
+            };
+            closeChatBtn.onclick = () => {
+                chatSidebar.classList.remove("open");
+                // Restore controls when chat closes
+                if (window.innerWidth <= 640 && isCompact) {
+                    isCompact = false;
+                    controlsBar.classList.remove("compact");
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i> Compact';
+                }
+            };
 
             sendMsgBtn.onclick = sendChat;
             msgInput.onkeypress = (e) => { if (e.key === "Enter") sendChat(); };
