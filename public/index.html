@@ -260,6 +260,7 @@
             flex-direction: column;
             gap: 6px;
             background: #0f172a;
+            padding-bottom: 90px; /* Space for input on mobile */
         }
         .msg-box {
             background: #1e293b;
@@ -309,6 +310,9 @@
             gap: 6px;
             background: #0f172a;
             flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 5;
         }
         .chat-input-area input {
             flex: 1;
@@ -463,6 +467,28 @@
         .btn-join:hover {
             background: #0369a1;
         }
+        .zoom-hint {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: #94a3b8;
+            z-index: 26;
+            display: none;
+            pointer-events: none;
+            border: 1px solid #334155;
+            white-space: nowrap;
+        }
+        .zoom-hint.show {
+            display: block;
+        }
+
+        /* ===== RESPONSIVE - SMALL PHONES ===== */
         @media (max-width: 640px) {
             .header {
                 height: 44px;
@@ -504,19 +530,48 @@
                 bottom: 5px;
                 left: 5px;
             }
+            /* Controls bar - smaller on mobile */
             .controls-bar {
                 bottom: 10px;
                 padding: 4px 8px;
                 gap: 4px;
             }
             .btn-ctrl {
-                width: 32px;
-                height: 32px;
-                font-size: 12px;
+                width: 34px;
+                height: 34px;
+                font-size: 13px;
             }
+            /* Chat sidebar - full width on mobile */
             .chat-sidebar {
                 max-width: 100%;
                 width: 100%;
+            }
+            /* Chat messages - extra bottom padding for input */
+            .chat-messages {
+                padding-bottom: 80px;
+            }
+            /* Chat input - positioned above controls */
+            .chat-input-area {
+                padding: 6px 10px;
+                background: #0f172a;
+                border-top: 1px solid #334155;
+                position: sticky;
+                bottom: 56px; /* Space above controls */
+                z-index: 10;
+                background: rgba(15, 23, 42, 0.95);
+                backdrop-filter: blur(8px);
+            }
+            .chat-input-area input {
+                font-size: 13px;
+                padding: 10px 14px;
+                min-height: 40px;
+                background: #1e293b;
+            }
+            .chat-input-area button {
+                min-height: 40px;
+                min-width: 44px;
+                font-size: 15px;
+                padding: 0 16px;
             }
             .modal-card {
                 padding: 20px 16px;
@@ -527,7 +582,13 @@
             .avatar-placeholder {
                 font-size: 11px;
             }
+            .zoom-hint {
+                bottom: 62px;
+                font-size: 10px;
+                padding: 4px 12px;
+            }
         }
+
         @media (max-width: 400px) {
             .video-grid {
                 padding: 4px;
@@ -536,26 +597,41 @@
                 grid-auto-rows: minmax(80px, 1fr);
             }
             .btn-ctrl {
-                width: 28px;
-                height: 28px;
-                font-size: 10px;
+                width: 30px;
+                height: 30px;
+                font-size: 11px;
             }
             .controls-bar {
                 gap: 3px;
                 padding: 3px 6px;
+                bottom: 8px;
             }
             .chat-input-area input {
-                font-size: 11px;
-                padding: 6px 10px;
-                min-height: 32px;
+                font-size: 12px;
+                padding: 8px 12px;
+                min-height: 36px;
             }
             .chat-input-area button {
-                min-height: 32px;
-                min-width: 34px;
-                font-size: 12px;
-                padding: 0 10px;
+                min-height: 36px;
+                min-width: 38px;
+                font-size: 13px;
+                padding: 0 12px;
+            }
+            .chat-input-area {
+                bottom: 48px;
+                padding: 4px 8px;
+            }
+            .chat-messages {
+                padding-bottom: 70px;
+            }
+            .zoom-hint {
+                bottom: 54px;
+                font-size: 9px;
+                padding: 3px 10px;
             }
         }
+
+        /* Chat scrollbar */
         .chat-messages::-webkit-scrollbar,
         .video-grid::-webkit-scrollbar {
             width: 3px;
@@ -568,33 +644,6 @@
         .video-grid::-webkit-scrollbar-thumb {
             background: #475569;
             border-radius: 10px;
-        }
-        /* Zoom indicator */
-        .zoom-hint {
-            position: fixed;
-            bottom: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: #94a3b8;
-            z-index: 26;
-            display: none;
-            pointer-events: none;
-            border: 1px solid #334155;
-        }
-        .zoom-hint.show {
-            display: block;
-        }
-        @media (max-width: 640px) {
-            .zoom-hint {
-                bottom: 62px;
-                font-size: 10px;
-                padding: 4px 12px;
-            }
         }
     </style>
 </head>
@@ -644,7 +693,7 @@
     </div>
 
     <!-- ZOOM HINT -->
-    <div id="zoomHint" class="zoom-hint">Bonyeza tile ili kuizoom • Bonyeza tena kurudi</div>
+    <div id="zoomHint" class="zoom-hint">Bonyeza tile kuizoom • Bonyeza tena kurudi</div>
 
     <!-- CONTROLS -->
     <div class="controls-bar">
@@ -741,11 +790,8 @@
                     localStream.getVideoTracks().forEach(t => t.enabled = false);
                     localVideo.srcObject = localStream;
                     
-                    // Enable audio loopback so user can hear themselves (for testing)
-                    // This helps confirm mic is working
                     const audioTrack = localStream.getAudioTracks()[0];
                     if (audioTrack) {
-                        // Don't enable by default, user must click mic button
                         console.log("Audio track available");
                     }
                 } catch (err) {
@@ -896,7 +942,6 @@
                         <i class="fa-solid fa-hand"></i>
                     </div>
                 `;
-                // Add click handler for zoom
                 tile.addEventListener("click", function(e) {
                     e.stopPropagation();
                     toggleZoom(this.id);
@@ -912,7 +957,6 @@
                 }
                 const tile = document.getElementById(`tile_${id}`);
                 if (tile) {
-                    // If this tile is zoomed, exit zoom first
                     if (isZoomed && zoomedTileId === id) {
                         exitZoom();
                     }
@@ -928,28 +972,23 @@
                 }
             }
 
-            // ---- ZOOM FUNCTIONALITY ----
+            // ---- ZOOM ----
             function toggleZoom(tileId) {
                 if (!tileId) return;
                 
-                // If zoomed and clicking the same tile, exit zoom
                 if (isZoomed && zoomedTileId === tileId) {
                     exitZoom();
                     return;
                 }
                 
-                // If zoomed and clicking different tile, switch zoom
                 if (isZoomed) {
-                    // Remove active class from current zoomed tile
                     const currentTile = document.getElementById(zoomedTileId);
                     if (currentTile) currentTile.classList.remove("active-zoom");
                 }
                 
-                // Zoom the selected tile
                 const tile = document.getElementById(tileId);
                 if (!tile) return;
                 
-                // Add active class
                 tile.classList.add("active-zoom");
                 videoGrid.classList.add("zoomed");
                 isZoomed = true;
@@ -967,7 +1006,6 @@
                 zoomHint.classList.remove("show");
             }
 
-            // Click on grid background to exit zoom
             videoGrid.addEventListener("click", function(e) {
                 if (e.target === this && isZoomed) {
                     exitZoom();
@@ -997,11 +1035,8 @@
                     micBtn.classList.toggle("off", !isMicOn);
                     micBtn.classList.toggle("active", isMicOn);
                     micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
-                    
-                    // Visual feedback that mic is working
                     if (isMicOn) {
-                        // Show a quick indicator
-                        console.log("Mic is ON - you should hear yourself");
+                        console.log("Mic is ON");
                     }
                 }
             };
@@ -1066,7 +1101,6 @@
 
                 await initMedia();
 
-                // Set initial UI state
                 cameraBtn.classList.add("off");
                 cameraBtn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
                 micBtn.classList.add("off");
@@ -1076,12 +1110,10 @@
                 connectSocket();
             };
 
-            // Press Enter to join
             usernameInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") joinBtn.click();
             });
 
-            // Add click handler to local tile for zoom
             localTile.addEventListener("click", function(e) {
                 e.stopPropagation();
                 toggleZoom(this.id);
