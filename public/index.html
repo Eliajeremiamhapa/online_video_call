@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Live Multi-Party Classroom</title>
-    <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -22,13 +21,10 @@
             overflow: hidden;
             touch-action: manipulation;
         }
-
-        /* HEADER */
         .header {
             height: 56px;
             background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -79,16 +75,12 @@
             background: #22c55e;
             box-shadow: 0 0 6px #22c55e88;
         }
-
-        /* MAIN CONTAINER */
         .container {
             flex: 1;
             display: flex;
             position: relative;
             overflow: hidden;
         }
-
-        /* VIDEO GRID — responsive & clear */
         .video-grid {
             flex: 1;
             padding: 12px;
@@ -101,7 +93,6 @@
             overflow-y: auto;
             background: #0f172a;
         }
-
         .video-card {
             position: relative;
             background: #1e293b;
@@ -112,7 +103,6 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            transition: all 0.25s ease;
             aspect-ratio: 4/3;
             min-height: 140px;
         }
@@ -126,7 +116,6 @@
         .video-card.local video {
             transform: scaleX(-1);
         }
-
         .avatar-placeholder {
             position: absolute;
             inset: 0;
@@ -146,14 +135,12 @@
             font-size: 44px;
             opacity: 0.7;
         }
-
         .participant-label {
             position: absolute;
             bottom: 10px;
             left: 10px;
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 11px;
@@ -163,7 +150,6 @@
             align-items: center;
             gap: 6px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            letter-spacing: 0.3px;
             max-width: 80%;
             white-space: nowrap;
             overflow: hidden;
@@ -172,7 +158,6 @@
         .participant-label i {
             font-size: 12px;
         }
-
         .hand-badge {
             position: absolute;
             top: 10px;
@@ -181,7 +166,6 @@
             color: #fff;
             padding: 6px;
             border-radius: 50%;
-            display: none;
             z-index: 3;
             animation: bounce 0.9s infinite alternate;
             font-size: 14px;
@@ -195,13 +179,10 @@
         .hand-badge.show {
             display: flex;
         }
-
         @keyframes bounce {
             0% { transform: translateY(0); }
             100% { transform: translateY(-5px); }
         }
-
-        /* CHAT SIDEBAR — improved, responsive */
         .chat-sidebar {
             width: 100%;
             max-width: 360px;
@@ -222,7 +203,6 @@
             transform: translateX(0);
             position: relative;
         }
-
         .chat-header {
             padding: 14px 16px;
             border-bottom: 1px solid #334155;
@@ -231,7 +211,6 @@
             justify-content: space-between;
             align-items: center;
             background: #0f172a;
-            border-radius: 0 0 0 0;
             flex-shrink: 0;
         }
         .chat-header span {
@@ -250,7 +229,6 @@
         .chat-header i.fa-xmark:hover {
             background: #334155;
         }
-
         .chat-messages {
             flex: 1;
             padding: 14px 12px;
@@ -297,12 +275,10 @@
             text-align: right;
             opacity: 0.7;
         }
-
         @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(6px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-
         .chat-input-area {
             padding: 10px 12px;
             border-top: 1px solid #334155;
@@ -342,8 +318,6 @@
         .chat-input-area button:hover {
             background: #0369a1;
         }
-
-        /* CONTROLS BAR — floating, responsive */
         .controls-bar {
             position: fixed;
             bottom: 18px;
@@ -351,7 +325,6 @@
             transform: translateX(-50%);
             background: rgba(30, 41, 59, 0.9);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             padding: 8px 14px;
             border-radius: 50px;
             display: flex;
@@ -399,14 +372,11 @@
         .btn-ctrl.danger:hover {
             background: #b91c1c;
         }
-
-        /* JOIN MODAL — responsive */
         .modal-overlay {
             position: fixed;
             inset: 0;
             background: rgba(15, 23, 42, 0.92);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -468,8 +438,6 @@
         .btn-join:hover {
             background: #0369a1;
         }
-
-        /* RESPONSIVE TWEAKS */
         @media (max-width: 640px) {
             .header {
                 height: 48px;
@@ -529,7 +497,6 @@
                 font-size: 12px;
             }
         }
-
         @media (max-width: 400px) {
             .video-grid {
                 grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -546,8 +513,6 @@
                 padding: 4px 8px;
             }
         }
-
-        /* Scrollbar styling */
         .chat-messages::-webkit-scrollbar,
         .video-grid::-webkit-scrollbar {
             width: 4px;
@@ -590,13 +555,11 @@
         </div>
     </header>
 
-    <!-- VIDEO GRID + CHAT SIDEBAR -->
+    <!-- VIDEO GRID + CHAT -->
     <div class="container">
         <div id="videoGrid" class="video-grid">
-            <!-- Local tile rendered by JS -->
+            <!-- Local tile -->
         </div>
-
-        <!-- CHAT SIDEBAR -->
         <div id="chatSidebar" class="chat-sidebar">
             <div class="chat-header">
                 <span><i class="fa-solid fa-comments"></i> Chat</span>
@@ -610,7 +573,7 @@
         </div>
     </div>
 
-    <!-- FLOATING CONTROLS -->
+    <!-- CONTROLS -->
     <div class="controls-bar">
         <button id="micBtn" class="btn-ctrl off" title="Mic"><i class="fa-solid fa-microphone-slash"></i></button>
         <button id="cameraBtn" class="btn-ctrl off" title="Camera"><i class="fa-solid fa-video-slash"></i></button>
@@ -619,416 +582,356 @@
         <button id="endBtn" class="btn-ctrl danger" title="Leave"><i class="fa-solid fa-phone-slash"></i></button>
     </div>
 
-<script>
-    (function() {
-        // DOM refs
-        const localVideo = document.getElementById("localVideo");
-        const localAvatar = document.getElementById("localAvatar");
-        const localNameLabel = document.getElementById("localNameLabel");
-        const localHand = document.getElementById("localHand");
-        const videoGrid = document.getElementById("videoGrid");
+    <script>
+        (function() {
+            "use strict";
 
-        const micBtn = document.getElementById("micBtn");
-        const cameraBtn = document.getElementById("cameraBtn");
-        const handBtn = document.getElementById("handBtn");
-        const chatBtn = document.getElementById("chatBtn");
-        const endBtn = document.getElementById("endBtn");
+            // Get DOM elements
+            const videoGrid = document.getElementById("videoGrid");
+            const joinModal = document.getElementById("joinModal");
+            const joinBtn = document.getElementById("joinBtn");
+            const usernameInput = document.getElementById("usernameInput");
+            const roomLabel = document.getElementById("roomLabel");
+            const statusDot = document.getElementById("statusDot");
+            const statusText = document.getElementById("statusText");
+            const micBtn = document.getElementById("micBtn");
+            const cameraBtn = document.getElementById("cameraBtn");
+            const handBtn = document.getElementById("handBtn");
+            const chatBtn = document.getElementById("chatBtn");
+            const endBtn = document.getElementById("endBtn");
+            const chatSidebar = document.getElementById("chatSidebar");
+            const closeChatBtn = document.getElementById("closeChatBtn");
+            const chatMessages = document.getElementById("chatMessages");
+            const msgInput = document.getElementById("msgInput");
+            const sendMsgBtn = document.getElementById("sendMsgBtn");
 
-        const joinModal = document.getElementById("joinModal");
-        const joinBtn = document.getElementById("joinBtn");
-        const usernameInput = document.getElementById("usernameInput");
-
-        const statusDot = document.getElementById("statusDot");
-        const statusText = document.getElementById("statusText");
-        const roomLabel = document.getElementById("roomLabel");
-
-        const chatSidebar = document.getElementById("chatSidebar");
-        const closeChatBtn = document.getElementById("closeChatBtn");
-        const chatMessages = document.getElementById("chatMessages");
-        const msgInput = document.getElementById("msgInput");
-        const sendMsgBtn = document.getElementById("sendMsgBtn");
-
-        // State
-        const params = new URLSearchParams(window.location.search);
-        const room = params.get("room") || "class1";
-        roomLabel.textContent = room;
-
-        const userId = "user_" + Math.random().toString(36).substr(2, 9);
-        let userName = "Participant";
-        let socket = null;
-        let localStream = null;
-        let isCameraOn = false;
-        let isMicOn = false;
-        let isHandRaised = false;
-
-        const peerConnections = new Map();
-
-        const rtcConfig = {
-            iceServers: [
-                { urls: "stun:stun.l.google.com:19302" },
-                { urls: "stun:stun1.l.google.com:19302" }
-            ]
-        };
-
-        // ---- MEDIA INIT ----
-        async function initMedia() {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    audio: true,
-                    video: true
-                });
-                // default off
-                localStream.getAudioTracks().forEach(t => t.enabled = false);
-                localStream.getVideoTracks().forEach(t => t.enabled = false);
-                localVideo.srcObject = localStream;
-            } catch (err) {
-                console.warn("Media permission error:", err);
-                localStream = new MediaStream();
-                // show avatar fallback
-            }
-        }
-
-        // ---- SOCKET ----
-        function connectSocket() {
-            const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-            socket = new WebSocket(`${protocol}//${window.location.host}`);
-
-            socket.onopen = () => {
-                statusText.textContent = "Online";
-                statusDot.classList.add("online");
-                socket.send(JSON.stringify({
-                    type: "join",
-                    room: room,
-                    userId: userId,
-                    userName: userName
-                }));
-            };
-
-            socket.onmessage = async (event) => {
-                const msg = JSON.parse(event.data);
-                if (msg.type === "joined") {
-                    msg.users.forEach(u => createPeerConnection(u.id, u.name, true));
-                }
-                if (msg.type === "user-joined") {
-                    createPeerConnection(msg.userId, msg.userName, false);
-                }
-                if (msg.type === "signal") {
-                    await handleSignal(msg.sender, msg.data);
-                }
-                if (msg.type === "user-left") {
-                    removeParticipantTile(msg.userId);
-                }
-                if (msg.type === "raise-hand") {
-                    toggleHandUI(msg.senderId, msg.raised);
-                }
-                if (msg.type === "chat") {
-                    appendChatMessage(msg.senderName, msg.text, msg.senderId === userId);
-                }
-            };
-
-            socket.onclose = () => {
-                statusText.textContent = "Disconnected";
-                statusDot.classList.remove("online");
-            };
-        }
-
-        // ---- PEER CONNECTION ----
-        function createPeerConnection(targetId, targetName, isInitiator) {
-            if (peerConnections.has(targetId)) return peerConnections.get(targetId);
-            const pc = new RTCPeerConnection(rtcConfig);
-            peerConnections.set(targetId, pc);
-
-            if (localStream) {
-                localStream.getTracks().forEach(track => {
-                    pc.addTrack(track, localStream);
-                });
-            }
-
-            pc.ontrack = (event) => {
-                let tile = document.getElementById(`tile_${targetId}`);
-                if (!tile) {
-                    tile = createParticipantTile(targetId, targetName);
-                }
-                const remoteVideo = tile.querySelector("video");
-                const avatar = tile.querySelector(".avatar-placeholder");
-                if (event.streams && event.streams[0]) {
-                    remoteVideo.srcObject = event.streams[0];
-                    const vt = event.streams[0].getVideoTracks()[0];
-                    if (vt) {
-                        vt.onunmute = () => { if (avatar) avatar.style.display = "none"; };
-                        vt.onmute = () => { if (avatar) avatar.style.display = "flex"; };
-                        // initial state
-                        if (vt.enabled) avatar.style.display = "none";
-                    }
-                }
-            };
-
-            pc.onicecandidate = (event) => {
-                if (event.candidate) {
-                    sendSignal(targetId, { type: "candidate", candidate: event.candidate });
-                }
-            };
-
-            if (isInitiator) {
-                pc.onnegotiationneeded = async () => {
-                    try {
-                        const offer = await pc.createOffer();
-                        await pc.setLocalDescription(offer);
-                        sendSignal(targetId, { type: "offer", sdp: pc.localDescription });
-                    } catch (e) { console.error("Offer error:", e); }
-                };
-            }
-            return pc;
-        }
-
-        async function handleSignal(senderId, data) {
-            let pc = peerConnections.get(senderId);
-            if (!pc) {
-                pc = createPeerConnection(senderId, "Participant", false);
-            }
-            try {
-                if (data.type === "offer") {
-                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-                    sendSignal(senderId, { type: "answer", sdp: pc.localDescription });
-                } else if (data.type === "answer") {
-                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                } else if (data.type === "candidate") {
-                    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-                }
-            } catch (e) { console.warn("Signal error:", e); }
-        }
-
-        function sendSignal(targetId, data) {
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                    type: "signal",
-                    target: targetId,
-                    data: data
-                }));
-            }
-        }
-
-        // ---- DOM TILES ----
-        function createParticipantTile(id, name) {
-            const tile = document.createElement("div");
-            tile.id = `tile_${id}`;
-            tile.className = "video-card";
-            tile.innerHTML = `
-                <div class="avatar-placeholder">
-                    <i class="fa-solid fa-user-large"></i>
-                    <span>${name}</span>
+            // Create local tile
+            const localTile = document.createElement("div");
+            localTile.id = "localTile";
+            localTile.className = "video-card local";
+            localTile.innerHTML = `
+                <div id="localAvatar" class="avatar-placeholder">
+                    <i class="fa-solid fa-user-slash"></i>
+                    <span>Kamera Iko Off</span>
                 </div>
-                <video autoplay playsinline></video>
+                <video id="localVideo" autoplay playsinline muted></video>
                 <div class="participant-label">
                     <i class="fa-solid fa-user"></i>
-                    <span>${name}</span>
+                    <span id="localNameLabel">Wewe</span>
                 </div>
-                <div id="hand_${id}" class="hand-badge">
+                <div id="localHand" class="hand-badge">
                     <i class="fa-solid fa-hand"></i>
                 </div>
             `;
-            videoGrid.appendChild(tile);
-            return tile;
-        }
+            videoGrid.appendChild(localTile);
 
-        function removeParticipantTile(id) {
-            if (peerConnections.has(id)) {
-                peerConnections.get(id).close();
-                peerConnections.delete(id);
+            // Get local elements after appending
+            const localVideo = document.getElementById("localVideo");
+            const localAvatar = document.getElementById("localAvatar");
+            const localNameLabel = document.getElementById("localNameLabel");
+            const localHand = document.getElementById("localHand");
+
+            // State
+            const params = new URLSearchParams(window.location.search);
+            const room = params.get("room") || "class1";
+            roomLabel.textContent = room;
+
+            const userId = "user_" + Math.random().toString(36).substr(2, 9);
+            let userName = "Participant";
+            let socket = null;
+            let localStream = null;
+            let isCameraOn = false;
+            let isMicOn = false;
+            let isHandRaised = false;
+            const peerConnections = new Map();
+
+            const rtcConfig = {
+                iceServers: [
+                    { urls: "stun:stun.l.google.com:19302" },
+                    { urls: "stun:stun1.l.google.com:19302" }
+                ]
+            };
+
+            // ---- MEDIA ----
+            async function initMedia() {
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({
+                        audio: true,
+                        video: true
+                    });
+                    localStream.getAudioTracks().forEach(t => t.enabled = false);
+                    localStream.getVideoTracks().forEach(t => t.enabled = false);
+                    localVideo.srcObject = localStream;
+                } catch (err) {
+                    console.warn("Media permission error:", err);
+                    localStream = new MediaStream();
+                }
             }
-            const tile = document.getElementById(`tile_${id}`);
-            if (tile) tile.remove();
-        }
 
-        function toggleHandUI(senderId, raised) {
-            if (senderId === userId) return;
-            const badge = document.getElementById(`hand_${senderId}`);
-            if (badge) {
-                badge.classList.toggle("show", raised);
+            // ---- SOCKET ----
+            function connectSocket() {
+                const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+                socket = new WebSocket(`${protocol}//${window.location.host}`);
+
+                socket.onopen = () => {
+                    statusText.textContent = "Online";
+                    statusDot.classList.add("online");
+                    socket.send(JSON.stringify({
+                        type: "join",
+                        room: room,
+                        userId: userId,
+                        userName: userName
+                    }));
+                };
+
+                socket.onmessage = async (event) => {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === "joined") {
+                        msg.users.forEach(u => createPeerConnection(u.id, u.name, true));
+                    }
+                    if (msg.type === "user-joined") {
+                        createPeerConnection(msg.userId, msg.userName, false);
+                    }
+                    if (msg.type === "signal") {
+                        await handleSignal(msg.sender, msg.data);
+                    }
+                    if (msg.type === "user-left") {
+                        removeParticipantTile(msg.userId);
+                    }
+                    if (msg.type === "raise-hand") {
+                        toggleHandUI(msg.senderId, msg.raised);
+                    }
+                    if (msg.type === "chat") {
+                        appendChatMessage(msg.senderName, msg.text, msg.senderId === userId);
+                    }
+                };
+
+                socket.onclose = () => {
+                    statusText.textContent = "Disconnected";
+                    statusDot.classList.remove("online");
+                };
             }
-        }
 
-        // ---- CONTROLS ----
-        cameraBtn.onclick = () => {
-            if (!localStream) return;
-            const track = localStream.getVideoTracks()[0];
-            if (track) {
-                isCameraOn = !isCameraOn;
-                track.enabled = isCameraOn;
-                cameraBtn.classList.toggle("off", !isCameraOn);
-                cameraBtn.classList.toggle("active", isCameraOn);
-                cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
-                localAvatar.style.display = isCameraOn ? "none" : "flex";
+            // ---- PEER ----
+            function createPeerConnection(targetId, targetName, isInitiator) {
+                if (peerConnections.has(targetId)) return peerConnections.get(targetId);
+                const pc = new RTCPeerConnection(rtcConfig);
+                peerConnections.set(targetId, pc);
+
+                if (localStream) {
+                    localStream.getTracks().forEach(track => {
+                        pc.addTrack(track, localStream);
+                    });
+                }
+
+                pc.ontrack = (event) => {
+                    let tile = document.getElementById(`tile_${targetId}`);
+                    if (!tile) {
+                        tile = createParticipantTile(targetId, targetName);
+                    }
+                    const remoteVideo = tile.querySelector("video");
+                    const avatar = tile.querySelector(".avatar-placeholder");
+                    if (event.streams && event.streams[0]) {
+                        remoteVideo.srcObject = event.streams[0];
+                        const vt = event.streams[0].getVideoTracks()[0];
+                        if (vt) {
+                            vt.onunmute = () => { if (avatar) avatar.style.display = "none"; };
+                            vt.onmute = () => { if (avatar) avatar.style.display = "flex"; };
+                            if (vt.enabled) avatar.style.display = "none";
+                        }
+                    }
+                };
+
+                pc.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        sendSignal(targetId, { type: "candidate", candidate: event.candidate });
+                    }
+                };
+
+                if (isInitiator) {
+                    pc.onnegotiationneeded = async () => {
+                        try {
+                            const offer = await pc.createOffer();
+                            await pc.setLocalDescription(offer);
+                            sendSignal(targetId, { type: "offer", sdp: pc.localDescription });
+                        } catch (e) { console.error("Offer error:", e); }
+                    };
+                }
+                return pc;
             }
-        };
 
-        micBtn.onclick = () => {
-            if (!localStream) return;
-            const track = localStream.getAudioTracks()[0];
-            if (track) {
-                isMicOn = !isMicOn;
-                track.enabled = isMicOn;
-                micBtn.classList.toggle("off", !isMicOn);
-                micBtn.classList.toggle("active", isMicOn);
-                micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+            async function handleSignal(senderId, data) {
+                let pc = peerConnections.get(senderId);
+                if (!pc) {
+                    pc = createPeerConnection(senderId, "Participant", false);
+                }
+                try {
+                    if (data.type === "offer") {
+                        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+                        sendSignal(senderId, { type: "answer", sdp: pc.localDescription });
+                    } else if (data.type === "answer") {
+                        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                    } else if (data.type === "candidate") {
+                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    }
+                } catch (e) { console.warn("Signal error:", e); }
             }
-        };
 
-        handBtn.onclick = () => {
-            isHandRaised = !isHandRaised;
-            handBtn.classList.toggle("active", isHandRaised);
-            localHand.classList.toggle("show", isHandRaised);
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                    type: "raise-hand",
-                    raised: isHandRaised
-                }));
+            function sendSignal(targetId, data) {
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: "signal",
+                        target: targetId,
+                        data: data
+                    }));
+                }
             }
-        };
 
-        // ---- CHAT ----
-        chatBtn.onclick = () => chatSidebar.classList.toggle("open");
-        closeChatBtn.onclick = () => chatSidebar.classList.remove("open");
-
-        sendMsgBtn.onclick = sendChat;
-        msgInput.onkeypress = (e) => { if (e.key === "Enter") sendChat(); };
-
-        function sendChat() {
-            const text = msgInput.value.trim();
-            if (!text) return;
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({ type: "chat", text: text }));
-                // show own message immediately
-                appendChatMessage(userName, text, true);
-                msgInput.value = "";
+            // ---- DOM ----
+            function createParticipantTile(id, name) {
+                const tile = document.createElement("div");
+                tile.id = `tile_${id}`;
+                tile.className = "video-card";
+                tile.innerHTML = `
+                    <div class="avatar-placeholder">
+                        <i class="fa-solid fa-user-large"></i>
+                        <span>${name}</span>
+                    </div>
+                    <video autoplay playsinline></video>
+                    <div class="participant-label">
+                        <i class="fa-solid fa-user"></i>
+                        <span>${name}</span>
+                    </div>
+                    <div id="hand_${id}" class="hand-badge">
+                        <i class="fa-solid fa-hand"></i>
+                    </div>
+                `;
+                videoGrid.appendChild(tile);
+                return tile;
             }
-        }
 
-        function appendChatMessage(sender, text, isSelf = false) {
-            const div = document.createElement("div");
-            div.className = `msg-box${isSelf ? ' self' : ''}`;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            div.innerHTML = `
-                <div class="msg-sender"><i class="fa-solid fa-user"></i> ${sender}</div>
-                <div>${text}</div>
-                <div class="msg-time">${time}</div>
-            `;
-            chatMessages.appendChild(div);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // ---- LEAVE ----
-        endBtn.onclick = () => {
-            if (localStream) localStream.getTracks().forEach(t => t.stop());
-            if (socket) socket.close();
-            window.location.reload();
-        };
-
-        // ---- JOIN ----
-        joinBtn.onclick = async () => {
-            const val = usernameInput.value.trim();
-            if (val) userName = val;
-            localNameLabel.textContent = `${userName} (Wewe)`;
-            joinModal.style.display = "none";
-
-            await initMedia();
-            connectSocket();
-
-            // initial UI state: camera off, mic off
-            cameraBtn.classList.add("off");
-            cameraBtn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
-            micBtn.classList.add("off");
-            micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-            localAvatar.style.display = "flex";
-        };
-
-        // prefill local tile
-        const localTile = document.createElement("div");
-        localTile.id = "localTile";
-        localTile.className = "video-card local";
-        localTile.innerHTML = `
-            <div id="localAvatar" class="avatar-placeholder">
-                <i class="fa-solid fa-user-slash"></i>
-                <span>Kamera Iko Off</span>
-            </div>
-            <video id="localVideo" autoplay playsinline muted></video>
-            <div class="participant-label">
-                <i class="fa-solid fa-user"></i>
-                <span id="localNameLabel">Wewe</span>
-            </div>
-            <div id="localHand" class="hand-badge">
-                <i class="fa-solid fa-hand"></i>
-            </div>
-        `;
-        videoGrid.appendChild(localTile);
-
-        // Reassign globals after DOM injection
-        Object.assign(window, {
-            localVideo: document.getElementById("localVideo"),
-            localAvatar: document.getElementById("localAvatar"),
-            localNameLabel: document.getElementById("localNameLabel"),
-            localHand: document.getElementById("localHand")
-        });
-
-        // Fix refs
-        const localVideoEl = document.getElementById("localVideo");
-        const localAvatarEl = document.getElementById("localAvatar");
-        const localNameLabelEl = document.getElementById("localNameLabel");
-        const localHandEl = document.getElementById("localHand");
-
-        // override local vars
-        window.localVideo = localVideoEl;
-        window.localAvatar = localAvatarEl;
-        window.localNameLabel = localNameLabelEl;
-        window.localHand = localHandEl;
-
-        // attach event listeners again with new refs
-        cameraBtn.onclick = () => {
-            if (!localStream) return;
-            const track = localStream.getVideoTracks()[0];
-            if (track) {
-                isCameraOn = !isCameraOn;
-                track.enabled = isCameraOn;
-                cameraBtn.classList.toggle("off", !isCameraOn);
-                cameraBtn.classList.toggle("active", isCameraOn);
-                cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
-                localAvatarEl.style.display = isCameraOn ? "none" : "flex";
+            function removeParticipantTile(id) {
+                if (peerConnections.has(id)) {
+                    peerConnections.get(id).close();
+                    peerConnections.delete(id);
+                }
+                const tile = document.getElementById(`tile_${id}`);
+                if (tile) tile.remove();
             }
-        };
 
-        micBtn.onclick = () => {
-            if (!localStream) return;
-            const track = localStream.getAudioTracks()[0];
-            if (track) {
-                isMicOn = !isMicOn;
-                track.enabled = isMicOn;
-                micBtn.classList.toggle("off", !isMicOn);
-                micBtn.classList.toggle("active", isMicOn);
-                micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+            function toggleHandUI(senderId, raised) {
+                if (senderId === userId) return;
+                const badge = document.getElementById(`hand_${senderId}`);
+                if (badge) {
+                    badge.classList.toggle("show", raised);
+                }
             }
-        };
 
-        handBtn.onclick = () => {
-            isHandRaised = !isHandRaised;
-            handBtn.classList.toggle("active", isHandRaised);
-            localHandEl.classList.toggle("show", isHandRaised);
-            if (socket && socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify({
-                    type: "raise-hand",
-                    raised: isHandRaised
-                }));
+            // ---- CONTROLS ----
+            cameraBtn.onclick = () => {
+                if (!localStream) return;
+                const track = localStream.getVideoTracks()[0];
+                if (track) {
+                    isCameraOn = !isCameraOn;
+                    track.enabled = isCameraOn;
+                    cameraBtn.classList.toggle("off", !isCameraOn);
+                    cameraBtn.classList.toggle("active", isCameraOn);
+                    cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
+                    localAvatar.style.display = isCameraOn ? "none" : "flex";
+                }
+            };
+
+            micBtn.onclick = () => {
+                if (!localStream) return;
+                const track = localStream.getAudioTracks()[0];
+                if (track) {
+                    isMicOn = !isMicOn;
+                    track.enabled = isMicOn;
+                    micBtn.classList.toggle("off", !isMicOn);
+                    micBtn.classList.toggle("active", isMicOn);
+                    micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+                }
+            };
+
+            handBtn.onclick = () => {
+                isHandRaised = !isHandRaised;
+                handBtn.classList.toggle("active", isHandRaised);
+                localHand.classList.toggle("show", isHandRaised);
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: "raise-hand",
+                        raised: isHandRaised
+                    }));
+                }
+            };
+
+            // ---- CHAT ----
+            chatBtn.onclick = () => chatSidebar.classList.toggle("open");
+            closeChatBtn.onclick = () => chatSidebar.classList.remove("open");
+
+            sendMsgBtn.onclick = sendChat;
+            msgInput.onkeypress = (e) => { if (e.key === "Enter") sendChat(); };
+
+            function sendChat() {
+                const text = msgInput.value.trim();
+                if (!text) return;
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({ type: "chat", text: text }));
+                    appendChatMessage(userName, text, true);
+                    msgInput.value = "";
+                } else {
+                    appendChatMessage("System", "Tafadhali subiri unganisho.", false);
+                }
             }
-        };
 
-        // allow enter on join
-        usernameInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") joinBtn.click();
-        });
+            function appendChatMessage(sender, text, isSelf = false) {
+                const div = document.createElement("div");
+                div.className = `msg-box${isSelf ? ' self' : ''}`;
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                div.innerHTML = `
+                    <div class="msg-sender"><i class="fa-solid fa-user"></i> ${sender}</div>
+                    <div>${text}</div>
+                    <div class="msg-time">${time}</div>
+                `;
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
 
-        console.log("Live Classroom initialized");
-    })();
-</script>
+            // ---- LEAVE ----
+            endBtn.onclick = () => {
+                if (localStream) localStream.getTracks().forEach(t => t.stop());
+                if (socket) socket.close();
+                window.location.reload();
+            };
+
+            // ---- JOIN ----
+            joinBtn.onclick = async () => {
+                const val = usernameInput.value.trim();
+                if (val) userName = val;
+                localNameLabel.textContent = `${userName} (Wewe)`;
+                joinModal.style.display = "none";
+
+                await initMedia();
+
+                // Set initial UI state
+                cameraBtn.classList.add("off");
+                cameraBtn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
+                micBtn.classList.add("off");
+                micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+                localAvatar.style.display = "flex";
+
+                connectSocket();
+            };
+
+            // Press Enter to join
+            usernameInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") joinBtn.click();
+            });
+
+            console.log("Live Classroom initialized successfully.");
+        })();
+    </script>
 </body>
 </html>
