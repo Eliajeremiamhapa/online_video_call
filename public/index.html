@@ -206,6 +206,8 @@
             0% { transform: translateY(0); }
             100% { transform: translateY(-4px); }
         }
+
+        /* ===== CHAT SIDEBAR - IMPROVED ===== */
         .chat-sidebar {
             width: 100%;
             max-width: 340px;
@@ -252,14 +254,18 @@
         .chat-header i.fa-xmark:hover {
             background: #334155;
         }
+
+        /* Chat messages - fixed height with scroll */
         .chat-messages {
             flex: 1;
-            padding: 12px 10px;
             overflow-y: auto;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
             background: #0f172a;
+            max-height: calc(100vh - 180px);
+            min-height: 200px;
         }
         .msg-box {
             background: #1e293b;
@@ -302,6 +308,8 @@
             0% { opacity: 0; transform: translateY(6px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+
+        /* Chat input - fixed at bottom of sidebar */
         .chat-input-area {
             padding: 8px 10px;
             border-top: 1px solid #334155;
@@ -309,9 +317,6 @@
             gap: 6px;
             background: #0f172a;
             flex-shrink: 0;
-            position: sticky;
-            bottom: 0;
-            z-index: 5;
         }
         .chat-input-area input {
             flex: 1;
@@ -346,8 +351,8 @@
         .chat-input-area button:hover {
             background: #0369a1;
         }
-        
-        /* ===== CONTROLS BAR - IMPROVED ===== */
+
+        /* ===== CONTROLS BAR ===== */
         .controls-wrapper {
             position: fixed;
             bottom: 12px;
@@ -383,14 +388,6 @@
             width: 34px;
             height: 34px;
             font-size: 12px;
-        }
-        .controls-bar.compact .btn-ctrl .btn-label {
-            display: none;
-        }
-        .controls-bar .btn-ctrl .btn-label {
-            font-size: 9px;
-            margin-left: 4px;
-            opacity: 0.7;
         }
         .btn-ctrl {
             width: 44px;
@@ -430,7 +427,8 @@
         .btn-ctrl.danger:hover {
             background: #b91c1c;
         }
-        /* Toggle button for compact/expand */
+
+        /* Toggle button */
         .toggle-controls-btn {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(8px);
@@ -450,44 +448,6 @@
         }
         .toggle-controls-btn i {
             margin-right: 4px;
-        }
-
-        .btn-ctrl {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: none;
-            background: #334155;
-            color: #f8fafc;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            touch-action: manipulation;
-            flex-shrink: 0;
-        }
-        .btn-ctrl:active {
-            transform: scale(0.92);
-        }
-        .btn-ctrl:hover {
-            background: #475569;
-        }
-        .btn-ctrl.off {
-            background: #ef4444;
-            color: white;
-        }
-        .btn-ctrl.active {
-            background: #0284c7;
-            color: white;
-        }
-        .btn-ctrl.danger {
-            background: #dc2626;
-            color: white;
-        }
-        .btn-ctrl.danger:hover {
-            background: #b91c1c;
         }
 
         .modal-overlay {
@@ -620,7 +580,7 @@
                 left: 5px;
             }
             
-            /* Controls - bigger and better on mobile */
+            /* Controls */
             .controls-wrapper {
                 bottom: 10px;
                 gap: 6px;
@@ -644,11 +604,8 @@
                 height: 40px;
                 font-size: 15px;
             }
-            .btn-ctrl .btn-label {
-                display: none !important;
-            }
             
-            /* Toggle button visible on mobile */
+            /* Toggle button */
             .toggle-controls-btn {
                 display: flex;
                 align-items: center;
@@ -657,22 +614,18 @@
                 padding: 3px 10px;
             }
             
-            /* Chat sidebar */
+            /* Chat sidebar - full width */
             .chat-sidebar {
                 max-width: 100%;
                 width: 100%;
             }
             .chat-messages {
-                padding-bottom: 60px;
+                max-height: calc(100vh - 160px);
+                min-height: 150px;
+                padding: 8px 10px;
             }
             .chat-input-area {
                 padding: 6px 10px;
-                position: sticky;
-                bottom: 0;
-                background: rgba(15, 23, 42, 0.95);
-                backdrop-filter: blur(8px);
-                border-top: 1px solid #334155;
-                z-index: 10;
             }
             .chat-input-area input {
                 font-size: 14px;
@@ -730,6 +683,10 @@
                 font-size: 9px;
                 padding: 2px 8px;
             }
+            .chat-messages {
+                max-height: calc(100vh - 150px);
+                min-height: 120px;
+            }
             .chat-input-area input {
                 font-size: 13px;
                 padding: 8px 12px;
@@ -741,9 +698,6 @@
                 font-size: 14px;
                 padding: 0 12px;
             }
-            .chat-messages {
-                padding-bottom: 50px;
-            }
             .zoom-hint {
                 bottom: 64px;
                 font-size: 9px;
@@ -751,7 +705,7 @@
             }
         }
 
-        /* Chat scrollbar */
+        /* Scrollbar styling */
         .chat-messages::-webkit-scrollbar,
         .video-grid::-webkit-scrollbar {
             width: 3px;
@@ -817,12 +771,9 @@
 
     <!-- CONTROLS WRAPPER -->
     <div class="controls-wrapper">
-        <!-- Toggle button for compact/expand -->
         <button id="toggleControlsBtn" class="toggle-controls-btn">
             <i class="fa-solid fa-chevron-left"></i> Compact
         </button>
-        
-        <!-- Controls Bar -->
         <div id="controlsBar" class="controls-bar">
             <button id="micBtn" class="btn-ctrl off" title="Mic">
                 <i class="fa-solid fa-microphone-slash"></i>
@@ -846,7 +797,6 @@
         (function() {
             "use strict";
 
-            // Get DOM elements
             const videoGrid = document.getElementById("videoGrid");
             const joinModal = document.getElementById("joinModal");
             const joinBtn = document.getElementById("joinBtn");
@@ -890,7 +840,6 @@
             `;
             videoGrid.appendChild(localTile);
 
-            // Get local elements
             const localVideo = document.getElementById("localVideo");
             const localAvatar = document.getElementById("localAvatar");
             const localNameLabel = document.getElementById("localNameLabel");
@@ -941,11 +890,6 @@
                     localStream.getAudioTracks().forEach(t => t.enabled = false);
                     localStream.getVideoTracks().forEach(t => t.enabled = false);
                     localVideo.srcObject = localStream;
-                    
-                    const audioTrack = localStream.getAudioTracks()[0];
-                    if (audioTrack) {
-                        console.log("Audio track available");
-                    }
                 } catch (err) {
                     console.warn("Media permission error:", err);
                     localStream = new MediaStream();
@@ -1127,26 +1071,22 @@
             // ---- ZOOM ----
             function toggleZoom(tileId) {
                 if (!tileId) return;
-                
                 if (isZoomed && zoomedTileId === tileId) {
                     exitZoom();
                     return;
                 }
-                
                 if (isZoomed) {
                     const currentTile = document.getElementById(zoomedTileId);
                     if (currentTile) currentTile.classList.remove("active-zoom");
                 }
-                
                 const tile = document.getElementById(tileId);
                 if (!tile) return;
-                
                 tile.classList.add("active-zoom");
                 videoGrid.classList.add("zoomed");
                 isZoomed = true;
                 zoomedTileId = tileId;
                 zoomHint.classList.add("show");
-                zoomHint.textContent = `Bonyeza tena kurudi kwenye gridi`;
+                zoomHint.textContent = "Bonyeza tena kurudi kwenye gridi";
             }
 
             function exitZoom() {
@@ -1187,9 +1127,6 @@
                     micBtn.classList.toggle("off", !isMicOn);
                     micBtn.classList.toggle("active", isMicOn);
                     micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
-                    if (isMicOn) {
-                        console.log("Mic is ON");
-                    }
                 }
             };
 
@@ -1208,7 +1145,6 @@
             // ---- CHAT ----
             chatBtn.onclick = () => {
                 chatSidebar.classList.toggle("open");
-                // Auto-compact controls when chat opens on mobile
                 if (window.innerWidth <= 640 && !isCompact) {
                     isCompact = true;
                     controlsBar.classList.add("compact");
@@ -1217,7 +1153,6 @@
             };
             closeChatBtn.onclick = () => {
                 chatSidebar.classList.remove("open");
-                // Restore controls when chat closes
                 if (window.innerWidth <= 640 && isCompact) {
                     isCompact = false;
                     controlsBar.classList.remove("compact");
@@ -1266,15 +1201,12 @@
                 if (val) userName = val;
                 localNameLabel.textContent = `${userName} (Wewe)`;
                 joinModal.style.display = "none";
-
                 await initMedia();
-
                 cameraBtn.classList.add("off");
                 cameraBtn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
                 micBtn.classList.add("off");
                 micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
                 localAvatar.style.display = "flex";
-
                 connectSocket();
             };
 
@@ -1288,7 +1220,6 @@
             });
 
             console.log("Live Classroom initialized successfully.");
-            console.log("Tips: Bonyeza tile ya mtu yeyote kuizoom. Bonyeza tena kurudi.");
         })();
     </script>
 </body>
