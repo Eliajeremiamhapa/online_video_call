@@ -226,7 +226,7 @@
             right: 0;
             top: 0;
             bottom: 0;
-            z-index: 30;
+            z-index: 50; /* Higher z-index to stay above controls */
             transform: translateX(100%);
             box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
         }
@@ -315,13 +315,15 @@
 
         /* Chat input - Always pinned at bottom */
         .chat-input-area {
-            padding: 10px 12px;
+            padding: 12px;
             border-top: 1px solid #334155;
             display: flex;
             gap: 8px;
             background: #1e293b;
             flex-shrink: 0;
-            z-index: 5;
+            z-index: 55;
+            position: sticky;
+            bottom: 0;
         }
         .chat-input-area input {
             flex: 1;
@@ -613,16 +615,27 @@
                 padding: 3px 10px;
             }
             
-            /* Chat sidebar on mobile */
+            /* Chat sidebar on mobile - Fix input visibility */
             .chat-sidebar {
+                position: fixed;
+                inset: 0;
+                top: 44px;
                 max-width: 100%;
                 width: 100%;
+                height: calc(100vh - 44px);
+                z-index: 50;
+            }
+            .chat-sidebar.open {
+                position: fixed;
             }
             .chat-messages {
                 padding: 10px;
+                padding-bottom: 16px;
             }
             .chat-input-area {
-                padding: 8px 10px;
+                padding: 10px 12px;
+                background: #1e293b;
+                border-top: 1px solid #334155;
             }
             .chat-input-area input {
                 font-size: 14px;
@@ -976,9 +989,8 @@
 
             async function handleSignal(senderId, data) {
                 let pc = peerConnections.get(senderId);
-                if (!pc) {
-                    pc = createPeerConnection(senderId, "Participant", false);
-                }
+                if (!pc) pc = createPeerConnection(senderId, "User", false);
+
                 if (data.type === "offer") {
                     await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
                     const answer = await pc.createAnswer();
@@ -1002,7 +1014,6 @@
                 }
             }
 
-            // ---- UI HELPERS ----
             function createParticipantTile(id, name) {
                 const tile = document.createElement("div");
                 tile.id = `tile_${id}`;
@@ -1023,9 +1034,8 @@
                         <i class="fa-solid fa-hand"></i>
                     </div>
                 `;
-                tile.addEventListener("click", () => toggleZoom(tile));
                 videoGrid.appendChild(tile);
-                updateZoomHint();
+                setupZoomTile(tile);
                 return tile;
             }
 
@@ -1036,106 +1046,74 @@
                     peerConnections.get(id).close();
                     peerConnections.delete(id);
                 }
-                if (zoomedTileId === `tile_${id}`) {
-                    resetZoom();
-                }
-                updateZoomHint();
             }
 
             function toggleHandUI(id, raised) {
-                const targetTile = id === userId ? localTile : document.getElementById(`tile_${id}`);
-                if (targetTile) {
-                    const badge = targetTile.querySelector(".hand-badge");
-                    if (badge) {
-                        badge.classList.toggle("show", raised);
-                    }
-                }
-            }
-
-            // ---- ZOOM FUNCTIONALITY ----
-            localTile.addEventListener("click", () => toggleZoom(localTile));
-
-            function toggleZoom(tile) {
-                if (isZoomed && zoomedTileId === tile.id) {
-                    resetZoom();
+                let handBadge;
+                if (id === userId) {
+                    handBadge = localHand;
                 } else {
-                    if (isZoomed) resetZoom();
-                    isZoomed = true;
-                    zoomedTileId = tile.id;
-                    videoGrid.classList.add("zoomed");
-                    tile.classList.add("active-zoom");
+                    const tile = document.getElementById(`tile_${id}`);
+                    if (tile) handBadge = tile.querySelector(".hand-badge");
+                }
+                if (handBadge) {
+                    handBadge.classList.toggle("show", raised);
                 }
             }
 
-            function resetZoom() {
-                isZoomed = false;
-                zoomedTileId = null;
-                videoGrid.classList.remove("zoomed");
-                document.querySelectorAll(".video-card").forEach(c => c.classList.remove("active-zoom"));
-            }
-
-            function updateZoomHint() {
-                const tilesCount = videoGrid.children.length;
-                if (tilesCount > 1) {
-                    zoomHint.classList.add("show");
-                } else {
-                    zoomHint.classList.remove("show");
-                }
-            }
-
-            // ---- CHAT CONTROLS ----
             function appendChatMessage(sender, text, isSelf) {
+                const msgBox = document.createElement("div");
+                msgBox.className = `msg-box ${isSelf ? "self" : ""}`;
                 const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const msgEl = document.createElement("div");
-                msgEl.className = `msg-box ${isSelf ? 'self' : ''}`;
-                msgEl.innerHTML = `
+                msgBox.innerHTML = `
                     <div class="msg-sender"><i class="fa-solid fa-user"></i> ${sender}</div>
-                    <div class="msg-text"></div>
+                    <div>${text}</div>
                     <div class="msg-time">${time}</div>
                 `;
-                msgEl.querySelector(".msg-text").textContent = text;
-                chatMessages.appendChild(msgEl);
+                chatMessages.appendChild(msgBox);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
-            function sendMessage() {
-                const text = msgInput.value.trim();
-                if (!text) return;
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({
-                        type: "chat",
-                        room: room,
-                        senderId: userId,
-                        senderName: userName,
-                        text: text
-                    }));
-                }
-                msgInput.value = "";
+            // ---- ZOOM FUNCTIONALITY ----
+            function setupZoomTile(tile) {
+                tile.addEventListener("click", () => {
+                    if (!isZoomed) {
+                        isZoomed = true;
+                        zoomedTileId = tile.id;
+                        videoGrid.classList.add("zoomed");
+                        tile.classList.add("active-zoom");
+                        zoomHint.classList.add("show");
+                    } else if (zoomedTileId === tile.id) {
+                        isZoomed = false;
+                        zoomedTileId = null;
+                        videoGrid.classList.remove("zoomed");
+                        tile.classList.remove("active-zoom");
+                        zoomHint.classList.remove("show");
+                    }
+                });
             }
+            setupZoomTile(localTile);
 
-            sendMsgBtn.addEventListener("click", sendMessage);
-            msgInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") sendMessage();
+            // ---- UI EVENT LISTENERS ----
+            joinBtn.addEventListener("click", async () => {
+                const name = usernameInput.value.trim();
+                if (!name) return;
+                userName = name;
+                localNameLabel.textContent = userName;
+                joinModal.style.display = "none";
+                await initMedia();
+                connectSocket();
             });
 
-            chatBtn.addEventListener("click", () => {
-                chatSidebar.classList.toggle("open");
-                chatBtn.classList.toggle("active", chatSidebar.classList.contains("open"));
-            });
-
-            closeChatBtn.addEventListener("click", () => {
-                chatSidebar.classList.remove("open");
-                chatBtn.classList.remove("active");
-            });
-
-            // ---- MEDIA CONTROL BUTTONS ----
             micBtn.addEventListener("click", () => {
                 isMicOn = !isMicOn;
                 if (localStream) {
                     localStream.getAudioTracks().forEach(t => t.enabled = isMicOn);
                 }
                 micBtn.classList.toggle("off", !isMicOn);
-                micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+                micBtn.innerHTML = isMicOn 
+                    ? '<i class="fa-solid fa-microphone"></i>' 
+                    : '<i class="fa-solid fa-microphone-slash"></i>';
             });
 
             cameraBtn.addEventListener("click", () => {
@@ -1144,7 +1122,9 @@
                     localStream.getVideoTracks().forEach(t => t.enabled = isCameraOn);
                 }
                 cameraBtn.classList.toggle("off", !isCameraOn);
-                cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
+                cameraBtn.innerHTML = isCameraOn 
+                    ? '<i class="fa-solid fa-video"></i>' 
+                    : '<i class="fa-solid fa-video-slash"></i>';
                 localAvatar.style.display = isCameraOn ? "none" : "flex";
             });
 
@@ -1155,34 +1135,43 @@
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.send(JSON.stringify({
                         type: "raise-hand",
-                        room: room,
                         senderId: userId,
                         raised: isHandRaised
                     }));
                 }
             });
 
+            chatBtn.addEventListener("click", () => {
+                chatSidebar.classList.toggle("open");
+            });
+
+            closeChatBtn.addEventListener("click", () => {
+                chatSidebar.classList.remove("open");
+            });
+
+            sendMsgBtn.addEventListener("click", sendChat);
+            msgInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendChat();
+            });
+
+            function sendChat() {
+                const text = msgInput.value.trim();
+                if (!text) return;
+                msgInput.value = "";
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: "chat",
+                        senderId: userId,
+                        senderName: userName,
+                        text: text
+                    }));
+                }
+            }
+
             endBtn.addEventListener("click", () => {
-                if (confirm("Je, unataka kuondoka kwenye darasa?")) {
+                if (confirm("Unahakika unataka kuondoka darasani?")) {
                     window.location.reload();
                 }
-            });
-
-            // ---- JOIN CLASSROOM ----
-            joinBtn.addEventListener("click", async () => {
-                const name = usernameInput.value.trim();
-                if (name) {
-                    userName = name;
-                    localNameLabel.textContent = userName + " (Wewe)";
-                    localTile.dataset.userName = userName;
-                    joinModal.style.display = "none";
-                    await initMedia();
-                    connectSocket();
-                }
-            });
-
-            usernameInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") joinBtn.click();
             });
 
         })();
