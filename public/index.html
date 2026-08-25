@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sw">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -750,11 +750,11 @@
     <!-- JOIN MODAL -->
     <div id="joinModal" class="modal-overlay">
         <div class="modal-card">
-            <h2><i class="fa-solid fa-graduation-cap" style="color:#38bdf8;"></i> ONGEA KIINGEREZA BILA WOGA NA RAS SIMBA</h2>
-            <div class="caption-tag">"Jenga kujiamini, pata msisimko!"</div>
-            <p>Ingiza jina lako ili kujiunga na darasa la Live</p>
-            <input type="text" id="usernameInput" placeholder="Jina lako, e.g. Elia Mhapa" autofocus />
-            <button id="joinBtn" class="btn-join"><i class="fa-solid fa-right-to-bracket"></i> Jiunge Sasa</button>
+            <h2><i class="fa-solid fa-graduation-cap" style="color:#38bdf8;"></i> SPEAK OUT WITH RAS SIMBA</h2>
+            <div class="caption-tag">"Build your confidence, get the vibe!"</div>
+            <p>Enter your name to join the Live class</p>
+            <input type="text" id="usernameInput" placeholder="Your name, e.g. Elia Mhapa" autofocus />
+            <button id="joinBtn" class="btn-join"><i class="fa-solid fa-right-to-bracket"></i> Join Now</button>
         </div>
     </div>
 
@@ -788,14 +788,14 @@
             </div>
             <div id="chatMessages" class="chat-messages"></div>
             <div class="chat-input-area">
-                <input type="text" id="msgInput" placeholder="Andika ujumbe..." />
+                <input type="text" id="msgInput" placeholder="Type a message..." />
                 <button id="sendMsgBtn"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
     <!-- ZOOM HINT -->
-    <div id="zoomHint" class="zoom-hint">Bonyeza tile kuizoom • Bonyeza tena kurudi</div>
+    <div id="zoomHint" class="zoom-hint">Click tile to zoom • Click again to return</div>
 
     <!-- CONTROLS WRAPPER -->
     <div class="controls-wrapper">
@@ -851,16 +851,16 @@
             localTile.id = "localTile";
             localTile.className = "video-card local";
             localTile.dataset.userId = "local";
-            localTile.dataset.userName = "Wewe";
+            localTile.dataset.userName = "You";
             localTile.innerHTML = `
                 <div id="localAvatar" class="avatar-placeholder">
                     <i class="fa-solid fa-user-slash"></i>
-                    <span>Kamera Iko Off</span>
+                    <span>Camera is Off</span>
                 </div>
                 <video id="localVideo" autoplay playsinline muted></video>
                 <div class="participant-label">
                     <i class="fa-solid fa-user"></i>
-                    <span id="localNameLabel">Wewe</span>
+                    <span id="localNameLabel">You</span>
                 </div>
                 <div id="localHand" class="hand-badge">
                     <i class="fa-solid fa-hand"></i>
@@ -984,27 +984,52 @@
                     });
                 }
 
-                pc.ontrack = (event) => {
-                    let tile = document.getElementById(`tile_${targetId}`);
-                    if (!tile) {
-                        tile = createParticipantTile(targetId, targetName);
+                pc.ontrack = (evt) => {
+                    let remoteCard = document.getElementById(`card_${targetId}`);
+                    if (!remoteCard) {
+                        remoteCard = document.createElement("div");
+                        remoteCard.id = `card_${targetId}`;
+                        remoteCard.className = "video-card";
+                        remoteCard.dataset.userId = targetId;
+                        remoteCard.dataset.userName = targetName;
+                        remoteCard.innerHTML = `
+                            <div id="avatar_${targetId}" class="avatar-placeholder">
+                                <i class="fa-solid fa-user"></i>
+                                <span>${targetName}</span>
+                            </div>
+                            <video id="video_${targetId}" autoplay playsinline></video>
+                            <div class="participant-label">
+                                <i class="fa-solid fa-user"></i>
+                                <span>${targetName}</span>
+                            </div>
+                            <div id="hand_${targetId}" class="hand-badge">
+                                <i class="fa-solid fa-hand"></i>
+                            </div>
+                        `;
+                        remoteCard.addEventListener("click", () => handleTileClick(remoteCard.id));
+                        videoGrid.appendChild(remoteCard);
+                        updateZoomHint();
                     }
-                    const remoteVideo = tile.querySelector("video");
-                    const avatar = tile.querySelector(".avatar-placeholder");
-                    if (event.streams && event.streams[0]) {
-                        remoteVideo.srcObject = event.streams[0];
-                        const vt = event.streams[0].getVideoTracks()[0];
-                        if (vt) {
-                            vt.onunmute = () => { if (avatar) avatar.style.display = "none"; };
-                            vt.onmute = () => { if (avatar) avatar.style.display = "flex"; };
-                            if (vt.enabled) avatar.style.display = "none";
+
+                    const remoteVideo = document.getElementById(`video_${targetId}`);
+                    const remoteAvatar = document.getElementById(`avatar_${targetId}`);
+                    if (remoteVideo) {
+                        remoteVideo.srcObject = evt.streams[0];
+                        if (evt.track.kind === "video") {
+                            evt.track.onmute = () => { if (remoteAvatar) remoteAvatar.style.display = "flex"; };
+                            evt.track.onunmute = () => { if (remoteAvatar) remoteAvatar.style.display = "none"; };
                         }
                     }
                 };
 
-                pc.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        sendSignal(targetId, { type: "candidate", candidate: event.candidate });
+                pc.onicecandidate = (evt) => {
+                    if (evt.candidate && socket && socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({
+                            type: "signal",
+                            target: targetId,
+                            sender: userId,
+                            data: { candidate: evt.candidate }
+                        }));
                     }
                 };
 
@@ -1013,9 +1038,16 @@
                         try {
                             const offer = await pc.createOffer();
                             await pc.setLocalDescription(offer);
-                            sendSignal(targetId, { type: "offer", sdp: pc.localDescription });
-                        } catch (e) {
-                            console.error("Offer error:", e);
+                            if (socket && socket.readyState === WebSocket.OPEN) {
+                                socket.send(JSON.stringify({
+                                    type: "signal",
+                                    target: targetId,
+                                    sender: userId,
+                                    data: { sdp: pc.localDescription }
+                                }));
+                            }
+                        } catch (err) {
+                            console.error("Offer creation error:", err);
                         }
                     };
                 }
@@ -1024,105 +1056,94 @@
             }
 
             async function handleSignal(senderId, data) {
-                const pc = peerConnections.get(senderId) || createPeerConnection(senderId, "Participant", false);
-                if (data.type === "offer") {
-                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                    const answer = await pc.createAnswer();
-                    await pc.setLocalDescription(answer);
-                    sendSignal(senderId, { type: "answer", sdp: pc.localDescription });
-                } else if (data.type === "answer") {
-                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                } else if (data.type === "candidate") {
-                    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                let pc = peerConnections.get(senderId);
+                if (!pc) {
+                    pc = createPeerConnection(senderId, "Participant", false);
                 }
-            }
-
-            function sendSignal(targetId, data) {
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({
-                        type: "signal",
-                        target: targetId,
-                        sender: userId,
-                        data: data
-                    }));
+                if (data.sdp) {
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                    if (data.sdp.type === "offer") {
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+                        if (socket && socket.readyState === WebSocket.OPEN) {
+                            socket.send(JSON.stringify({
+                                type: "signal",
+                                target: senderId,
+                                sender: userId,
+                                data: { sdp: pc.localDescription }
+                            }));
+                        }
+                    }
+                } else if (data.candidate) {
+                    try {
+                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    } catch (err) {
+                        console.error("Candidate add error:", err);
+                    }
                 }
-            }
-
-            function createParticipantTile(id, name) {
-                const tile = document.createElement("div");
-                tile.id = `tile_${id}`;
-                tile.className = "video-card";
-                tile.dataset.userId = id;
-                tile.dataset.userName = name;
-                tile.innerHTML = `
-                    <div class="avatar-placeholder">
-                        <i class="fa-solid fa-user"></i>
-                        <span>${name}</span>
-                    </div>
-                    <video autoplay playsinline></video>
-                    <div class="participant-label">
-                        <i class="fa-solid fa-user"></i>
-                        <span>${name}</span>
-                    </div>
-                    <div class="hand-badge">
-                        <i class="fa-solid fa-hand"></i>
-                    </div>
-                `;
-                tile.addEventListener("click", () => toggleZoom(tile));
-                videoGrid.appendChild(tile);
-                updateZoomHintVisibility();
-                return tile;
             }
 
             function removeParticipantTile(id) {
-                const tile = document.getElementById(`tile_${id}`);
-                if (tile) tile.remove();
-                if (peerConnections.has(id)) {
-                    peerConnections.get(id).close();
+                const pc = peerConnections.get(id);
+                if (pc) {
+                    pc.close();
                     peerConnections.delete(id);
                 }
-                if (zoomedTileId === `tile_${id}`) {
-                    resetZoom();
+                const card = document.getElementById(`card_${id}`);
+                if (card) {
+                    if (zoomedTileId === card.id) resetZoom();
+                    card.remove();
                 }
-                updateZoomHintVisibility();
+                updateZoomHint();
             }
 
-            // ---- ZOOM FUNCTIONALITY ----
-            localTile.addEventListener("click", () => toggleZoom(localTile));
-
-            function toggleZoom(tile) {
-                if (isZoomed && zoomedTileId === tile.id) {
+            // ---- TILE ZOOM HANDLER ----
+            function handleTileClick(tileId) {
+                if (isZoomed && zoomedTileId === tileId) {
                     resetZoom();
                 } else {
-                    document.querySelectorAll(".video-card").forEach(c => c.classList.remove("active-zoom"));
+                    applyZoom(tileId);
+                }
+            }
+
+            function applyZoom(tileId) {
+                const cards = document.querySelectorAll(".video-card");
+                cards.forEach(card => card.classList.remove("active-zoom"));
+
+                const targetTile = document.getElementById(tileId);
+                if (targetTile) {
+                    targetTile.classList.add("active-zoom");
                     videoGrid.classList.add("zoomed");
-                    tile.classList.add("active-zoom");
                     isZoomed = true;
-                    zoomedTileId = tile.id;
+                    zoomedTileId = tileId;
                 }
             }
 
             function resetZoom() {
+                const cards = document.querySelectorAll(".video-card");
+                cards.forEach(card => card.classList.remove("active-zoom"));
                 videoGrid.classList.remove("zoomed");
-                document.querySelectorAll(".video-card").forEach(c => c.classList.remove("active-zoom"));
                 isZoomed = false;
                 zoomedTileId = null;
             }
 
-            function updateZoomHintVisibility() {
-                const totalTiles = videoGrid.querySelectorAll(".video-card").length;
-                if (totalTiles > 1) {
+            localTile.addEventListener("click", () => handleTileClick("localTile"));
+
+            function updateZoomHint() {
+                const count = document.querySelectorAll(".video-card").length;
+                if (count > 1) {
                     zoomHint.classList.add("show");
                 } else {
                     zoomHint.classList.remove("show");
+                    if (isZoomed) resetZoom();
                 }
             }
 
-            // ---- CONTROLS ----
+            // ---- CONTROL BUTTONS ----
             micBtn.addEventListener("click", () => {
                 isMicOn = !isMicOn;
-                if (localStream) {
-                    localStream.getAudioTracks().forEach(t => t.enabled = isMicOn);
+                if (localStream && localStream.getAudioTracks().length > 0) {
+                    localStream.getAudioTracks()[0].enabled = isMicOn;
                 }
                 micBtn.classList.toggle("off", !isMicOn);
                 micBtn.classList.toggle("active", isMicOn);
@@ -1131,19 +1152,19 @@
 
             cameraBtn.addEventListener("click", () => {
                 isCameraOn = !isCameraOn;
-                if (localStream) {
-                    localStream.getVideoTracks().forEach(t => t.enabled = isCameraOn);
+                if (localStream && localStream.getVideoTracks().length > 0) {
+                    localStream.getVideoTracks()[0].enabled = isCameraOn;
                 }
+                localAvatar.style.display = isCameraOn ? "none" : "flex";
                 cameraBtn.classList.toggle("off", !isCameraOn);
                 cameraBtn.classList.toggle("active", isCameraOn);
                 cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
-                localAvatar.style.display = isCameraOn ? "none" : "flex";
             });
 
             handBtn.addEventListener("click", () => {
                 isHandRaised = !isHandRaised;
-                handBtn.classList.toggle("active", isHandRaised);
                 toggleHandUI("local", isHandRaised);
+                handBtn.classList.toggle("active", isHandRaised);
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.send(JSON.stringify({
                         type: "raise-hand",
@@ -1155,32 +1176,30 @@
             });
 
             function toggleHandUI(id, raised) {
-                if (id === "local" || id === userId) {
-                    localHand.classList.toggle("show", raised);
-                } else {
-                    const tile = document.getElementById(`tile_${id}`);
-                    if (tile) {
-                        const hb = tile.querySelector(".hand-badge");
-                        if (hb) hb.classList.toggle("show", raised);
-                    }
+                const targetHand = id === "local" || id === userId ? localHand : document.getElementById(`hand_${id}`);
+                if (targetHand) {
+                    if (raised) targetHand.classList.add("show");
+                    else targetHand.classList.remove("show");
                 }
             }
 
             chatBtn.addEventListener("click", () => {
                 chatSidebar.classList.toggle("open");
+                chatBtn.classList.toggle("active", chatSidebar.classList.contains("open"));
             });
 
             closeChatBtn.addEventListener("click", () => {
                 chatSidebar.classList.remove("open");
+                chatBtn.classList.remove("active");
             });
 
             endBtn.addEventListener("click", () => {
-                if (confirm("Unahakika unataka kuondoka darasani?")) {
+                if (confirm("Are you sure you want to leave the class?")) {
                     window.location.reload();
                 }
             });
 
-            // ---- CHAT ----
+            // ---- CHAT SYSTEM ----
             function sendChatMessage() {
                 const text = msgInput.value.trim();
                 if (!text) return;
@@ -1202,35 +1221,34 @@
             });
 
             function appendChatMessage(sender, text, isSelf) {
-                const box = document.createElement("div");
-                box.className = `msg-box ${isSelf ? "self" : ""}`;
-                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                box.innerHTML = `
-                    <div class="msg-sender"><i class="fa-solid fa-user"></i> ${isSelf ? "Wewe" : sender}</div>
+                const msgBox = document.createElement("div");
+                msgBox.className = `msg-box ${isSelf ? "self" : ""}`;
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                msgBox.innerHTML = `
+                    <div class="msg-sender"><i class="fa-solid fa-user"></i> ${sender}</div>
                     <div class="msg-text">${escapeHtml(text)}</div>
-                    <div class="msg-time">${timeStr}</div>
+                    <div class="msg-time">${time}</div>
                 `;
-                chatMessages.appendChild(box);
+                chatMessages.appendChild(msgBox);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
             function escapeHtml(str) {
-                return str.replace(/[&<>"']/g, function(m) {
-                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-                });
+                return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
             }
 
-            // ---- JOIN ----
+            // ---- JOIN CLASS ----
             joinBtn.addEventListener("click", async () => {
-                const name = usernameInput.value.trim();
-                if (name) {
-                    userName = name;
-                    localNameLabel.textContent = userName;
-                    localTile.dataset.userName = userName;
-                }
+                const nameVal = usernameInput.value.trim();
+                if (nameVal) userName = nameVal;
+                localNameLabel.textContent = userName + " (You)";
+
                 joinModal.style.display = "none";
+
                 await initMedia();
                 connectSocket();
+                updateZoomHint();
             });
 
             usernameInput.addEventListener("keypress", (e) => {
