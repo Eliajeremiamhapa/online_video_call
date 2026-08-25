@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Live Multi-Party Classroom</title>
+    <title>SPEAK OUT WITH RAS SIMBA | Live Multi-Party Classroom</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -43,6 +43,23 @@
         }
         .logo i {
             font-size: 18px;
+        }
+        .logo-title {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .logo-title .main-title {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #38bdf8;
+        }
+        .logo-title .sub-title {
+            font-size: 9px;
+            font-weight: 500;
+            color: #94a3b8;
+            font-style: italic;
         }
         .room-info {
             display: flex;
@@ -474,14 +491,23 @@
             padding: 24px 20px;
             border-radius: 24px;
             width: 100%;
-            max-width: 360px;
+            max-width: 380px;
             text-align: center;
             box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
         }
         .modal-card h2 {
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             color: #38bdf8;
-            font-size: 20px;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .modal-card .caption-tag {
+            font-size: 12px;
+            color: #f59e0b;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-style: italic;
         }
         .modal-card p {
             font-size: 13px;
@@ -547,7 +573,7 @@
         /* ===== RESPONSIVE MOBILE STYLES ===== */
         @media (max-width: 640px) {
             .header {
-                height: 44px;
+                height: 48px;
                 padding: 0 10px;
             }
             .logo {
@@ -555,6 +581,12 @@
             }
             .logo i {
                 font-size: 15px;
+            }
+            .logo-title .main-title {
+                font-size: 11px;
+            }
+            .logo-title .sub-title {
+                font-size: 8px;
             }
             .room-info {
                 font-size: 10px;
@@ -718,8 +750,9 @@
     <!-- JOIN MODAL -->
     <div id="joinModal" class="modal-overlay">
         <div class="modal-card">
-            <h2><i class="fa-solid fa-graduation-cap" style="color:#38bdf8;"></i> Live Classroom</h2>
-            <p>Ingiza jina lako ili kujiunga</p>
+            <h2><i class="fa-solid fa-graduation-cap" style="color:#38bdf8;"></i> ONGEA KIINGEREZA BILA WOGA NA RAS SIMBA</h2>
+            <div class="caption-tag">"Jenga kujiamini, pata msisimko!"</div>
+            <p>Ingiza jina lako ili kujiunga na darasa la Live</p>
             <input type="text" id="usernameInput" placeholder="Jina lako, e.g. Elia Mhapa" autofocus />
             <button id="joinBtn" class="btn-join"><i class="fa-solid fa-right-to-bracket"></i> Jiunge Sasa</button>
         </div>
@@ -729,7 +762,10 @@
     <header class="header">
         <div class="logo">
             <i class="fa-solid fa-chalkboard-user"></i>
-            <span>Classroom</span>
+            <div class="logo-title">
+                <span class="main-title">SPEAK OUT WITH RAS SIMBA</span>
+                <span class="sub-title">"Build your confidence, get the vibe!"</span>
+            </div>
         </div>
         <div class="room-info">
             <span>Room: <b id="roomLabel">...</b></span>
@@ -988,9 +1024,7 @@
             }
 
             async function handleSignal(senderId, data) {
-                let pc = peerConnections.get(senderId);
-                if (!pc) pc = createPeerConnection(senderId, "User", false);
-
+                const pc = peerConnections.get(senderId) || createPeerConnection(senderId, "Participant", false);
                 if (data.type === "offer") {
                     await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
                     const answer = await pc.createAnswer();
@@ -1034,8 +1068,9 @@
                         <i class="fa-solid fa-hand"></i>
                     </div>
                 `;
+                tile.addEventListener("click", () => toggleZoom(tile));
                 videoGrid.appendChild(tile);
-                setupZoomTile(tile);
+                updateZoomHintVisibility();
                 return tile;
             }
 
@@ -1046,74 +1081,52 @@
                     peerConnections.get(id).close();
                     peerConnections.delete(id);
                 }
-            }
-
-            function toggleHandUI(id, raised) {
-                let handBadge;
-                if (id === userId) {
-                    handBadge = localHand;
-                } else {
-                    const tile = document.getElementById(`tile_${id}`);
-                    if (tile) handBadge = tile.querySelector(".hand-badge");
+                if (zoomedTileId === `tile_${id}`) {
+                    resetZoom();
                 }
-                if (handBadge) {
-                    handBadge.classList.toggle("show", raised);
-                }
-            }
-
-            function appendChatMessage(sender, text, isSelf) {
-                const msgBox = document.createElement("div");
-                msgBox.className = `msg-box ${isSelf ? "self" : ""}`;
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                msgBox.innerHTML = `
-                    <div class="msg-sender"><i class="fa-solid fa-user"></i> ${sender}</div>
-                    <div>${text}</div>
-                    <div class="msg-time">${time}</div>
-                `;
-                chatMessages.appendChild(msgBox);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                updateZoomHintVisibility();
             }
 
             // ---- ZOOM FUNCTIONALITY ----
-            function setupZoomTile(tile) {
-                tile.addEventListener("click", () => {
-                    if (!isZoomed) {
-                        isZoomed = true;
-                        zoomedTileId = tile.id;
-                        videoGrid.classList.add("zoomed");
-                        tile.classList.add("active-zoom");
-                        zoomHint.classList.add("show");
-                    } else if (zoomedTileId === tile.id) {
-                        isZoomed = false;
-                        zoomedTileId = null;
-                        videoGrid.classList.remove("zoomed");
-                        tile.classList.remove("active-zoom");
-                        zoomHint.classList.remove("show");
-                    }
-                });
+            localTile.addEventListener("click", () => toggleZoom(localTile));
+
+            function toggleZoom(tile) {
+                if (isZoomed && zoomedTileId === tile.id) {
+                    resetZoom();
+                } else {
+                    document.querySelectorAll(".video-card").forEach(c => c.classList.remove("active-zoom"));
+                    videoGrid.classList.add("zoomed");
+                    tile.classList.add("active-zoom");
+                    isZoomed = true;
+                    zoomedTileId = tile.id;
+                }
             }
-            setupZoomTile(localTile);
 
-            // ---- UI EVENT LISTENERS ----
-            joinBtn.addEventListener("click", async () => {
-                const name = usernameInput.value.trim();
-                if (!name) return;
-                userName = name;
-                localNameLabel.textContent = userName;
-                joinModal.style.display = "none";
-                await initMedia();
-                connectSocket();
-            });
+            function resetZoom() {
+                videoGrid.classList.remove("zoomed");
+                document.querySelectorAll(".video-card").forEach(c => c.classList.remove("active-zoom"));
+                isZoomed = false;
+                zoomedTileId = null;
+            }
 
+            function updateZoomHintVisibility() {
+                const totalTiles = videoGrid.querySelectorAll(".video-card").length;
+                if (totalTiles > 1) {
+                    zoomHint.classList.add("show");
+                } else {
+                    zoomHint.classList.remove("show");
+                }
+            }
+
+            // ---- CONTROLS ----
             micBtn.addEventListener("click", () => {
                 isMicOn = !isMicOn;
                 if (localStream) {
                     localStream.getAudioTracks().forEach(t => t.enabled = isMicOn);
                 }
                 micBtn.classList.toggle("off", !isMicOn);
-                micBtn.innerHTML = isMicOn 
-                    ? '<i class="fa-solid fa-microphone"></i>' 
-                    : '<i class="fa-solid fa-microphone-slash"></i>';
+                micBtn.classList.toggle("active", isMicOn);
+                micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
             });
 
             cameraBtn.addEventListener("click", () => {
@@ -1122,24 +1135,36 @@
                     localStream.getVideoTracks().forEach(t => t.enabled = isCameraOn);
                 }
                 cameraBtn.classList.toggle("off", !isCameraOn);
-                cameraBtn.innerHTML = isCameraOn 
-                    ? '<i class="fa-solid fa-video"></i>' 
-                    : '<i class="fa-solid fa-video-slash"></i>';
+                cameraBtn.classList.toggle("active", isCameraOn);
+                cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
                 localAvatar.style.display = isCameraOn ? "none" : "flex";
             });
 
             handBtn.addEventListener("click", () => {
                 isHandRaised = !isHandRaised;
                 handBtn.classList.toggle("active", isHandRaised);
-                toggleHandUI(userId, isHandRaised);
+                toggleHandUI("local", isHandRaised);
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.send(JSON.stringify({
                         type: "raise-hand",
+                        room: room,
                         senderId: userId,
                         raised: isHandRaised
                     }));
                 }
             });
+
+            function toggleHandUI(id, raised) {
+                if (id === "local" || id === userId) {
+                    localHand.classList.toggle("show", raised);
+                } else {
+                    const tile = document.getElementById(`tile_${id}`);
+                    if (tile) {
+                        const hb = tile.querySelector(".hand-badge");
+                        if (hb) hb.classList.toggle("show", raised);
+                    }
+                }
+            }
 
             chatBtn.addEventListener("click", () => {
                 chatSidebar.classList.toggle("open");
@@ -1149,29 +1174,67 @@
                 chatSidebar.classList.remove("open");
             });
 
-            sendMsgBtn.addEventListener("click", sendChat);
-            msgInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") sendChat();
+            endBtn.addEventListener("click", () => {
+                if (confirm("Unahakika unataka kuondoka darasani?")) {
+                    window.location.reload();
+                }
             });
 
-            function sendChat() {
+            // ---- CHAT ----
+            function sendChatMessage() {
                 const text = msgInput.value.trim();
                 if (!text) return;
-                msgInput.value = "";
                 if (socket && socket.readyState === WebSocket.OPEN) {
                     socket.send(JSON.stringify({
                         type: "chat",
+                        room: room,
                         senderId: userId,
                         senderName: userName,
                         text: text
                     }));
                 }
+                msgInput.value = "";
             }
 
-            endBtn.addEventListener("click", () => {
-                if (confirm("Unahakika unataka kuondoka darasani?")) {
-                    window.location.reload();
+            sendMsgBtn.addEventListener("click", sendChatMessage);
+            msgInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendChatMessage();
+            });
+
+            function appendChatMessage(sender, text, isSelf) {
+                const box = document.createElement("div");
+                box.className = `msg-box ${isSelf ? "self" : ""}`;
+                const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                box.innerHTML = `
+                    <div class="msg-sender"><i class="fa-solid fa-user"></i> ${isSelf ? "Wewe" : sender}</div>
+                    <div class="msg-text">${escapeHtml(text)}</div>
+                    <div class="msg-time">${timeStr}</div>
+                `;
+                chatMessages.appendChild(box);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function escapeHtml(str) {
+                return str.replace(/[&<>"']/g, function(m) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+                });
+            }
+
+            // ---- JOIN ----
+            joinBtn.addEventListener("click", async () => {
+                const name = usernameInput.value.trim();
+                if (name) {
+                    userName = name;
+                    localNameLabel.textContent = userName;
+                    localTile.dataset.userName = userName;
                 }
+                joinModal.style.display = "none";
+                await initMedia();
+                connectSocket();
+            });
+
+            usernameInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") joinBtn.click();
             });
 
         })();
