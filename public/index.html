@@ -81,14 +81,17 @@
             position: relative;
             overflow: hidden;
         }
+        
+        /* ===== VIDEO GRID - IMPROVED RESPONSIVE FLOW ===== */
         .video-grid {
             flex: 1;
-            padding: 8px;
+            padding: 10px;
+            padding-bottom: 90px; /* Space for bottom controls */
             display: grid;
-            gap: 8px;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            grid-auto-rows: minmax(140px, 1fr);
-            align-content: center;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-auto-rows: max-content;
+            align-content: start;
             justify-content: center;
             overflow-y: auto;
             background: #0f172a;
@@ -98,11 +101,12 @@
             grid-template-columns: 1fr;
             grid-auto-rows: 1fr;
             padding: 4px;
+            padding-bottom: 90px;
             gap: 4px;
         }
         .video-grid.zoomed .video-card {
             aspect-ratio: auto;
-            min-height: 80vh;
+            min-height: 75vh;
         }
         .video-grid.zoomed .video-card:not(.active-zoom) {
             display: none;
@@ -117,8 +121,9 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            aspect-ratio: 4/3;
-            min-height: 120px;
+            aspect-ratio: 16/9;
+            width: 100%;
+            min-height: 160px;
             cursor: pointer;
             transition: border-color 0.3s, transform 0.2s;
         }
@@ -166,7 +171,7 @@
             backdrop-filter: blur(6px);
             padding: 3px 10px;
             border-radius: 16px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 500;
             z-index: 2;
             display: flex;
@@ -207,10 +212,11 @@
             100% { transform: translateY(-4px); }
         }
 
-        /* ===== CHAT SIDEBAR - IMPROVED ===== */
+        /* ===== CHAT SIDEBAR - FIXED INPUT VISIBILITY ===== */
         .chat-sidebar {
             width: 100%;
             max-width: 340px;
+            height: 100%;
             background: #1e293b;
             border-left: 1px solid #334155;
             display: flex;
@@ -220,7 +226,7 @@
             right: 0;
             top: 0;
             bottom: 0;
-            z-index: 15;
+            z-index: 30;
             transform: translateX(100%);
             box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
         }
@@ -255,17 +261,15 @@
             background: #334155;
         }
 
-        /* Chat messages - fixed height with scroll */
+        /* Chat messages - Scrollable middle flex element */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 10px 12px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             background: #0f172a;
-            max-height: calc(100vh - 180px);
-            min-height: 200px;
         }
         .msg-box {
             background: #1e293b;
@@ -309,26 +313,27 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Chat input - fixed at bottom of sidebar */
+        /* Chat input - Always pinned at bottom */
         .chat-input-area {
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-top: 1px solid #334155;
             display: flex;
-            gap: 6px;
-            background: #0f172a;
+            gap: 8px;
+            background: #1e293b;
             flex-shrink: 0;
+            z-index: 5;
         }
         .chat-input-area input {
             flex: 1;
-            background: #1e293b;
+            background: #0f172a;
             border: 1px solid #334155;
             color: #fff;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 30px;
             outline: none;
-            font-size: 12px;
+            font-size: 13px;
             transition: border 0.2s;
-            min-height: 36px;
+            min-height: 42px;
         }
         .chat-input-area input:focus {
             border-color: #0284c7;
@@ -337,25 +342,25 @@
             background: #0284c7;
             border: none;
             color: #fff;
-            padding: 0 14px;
+            padding: 0 16px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             transition: background 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 40px;
-            min-height: 36px;
+            min-width: 44px;
+            min-height: 42px;
         }
         .chat-input-area button:hover {
             background: #0369a1;
         }
 
-        /* ===== CONTROLS BAR ===== */
+        /* ===== CONTROLS BAR - LARGER BUTTONS ===== */
         .controls-wrapper {
             position: fixed;
-            bottom: 12px;
+            bottom: 14px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 25;
@@ -367,13 +372,13 @@
             max-width: 95%;
         }
         .controls-bar {
-            background: rgba(30, 41, 59, 0.92);
+            background: rgba(30, 41, 59, 0.95);
             backdrop-filter: blur(16px);
-            padding: 8px 14px;
+            padding: 10px 16px;
             border-radius: 50px;
             display: flex;
-            gap: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
             flex-wrap: nowrap;
             justify-content: center;
@@ -381,22 +386,22 @@
             width: auto;
         }
         .controls-bar.compact {
-            padding: 6px 10px;
-            gap: 4px;
+            padding: 6px 12px;
+            gap: 6px;
         }
         .controls-bar.compact .btn-ctrl {
-            width: 34px;
-            height: 34px;
-            font-size: 12px;
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
         }
         .btn-ctrl {
-            width: 44px;
-            height: 44px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             border: none;
             background: #334155;
             color: #f8fafc;
-            font-size: 16px;
+            font-size: 19px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -430,7 +435,7 @@
 
         /* Toggle button */
         .toggle-controls-btn {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #94a3b8;
@@ -443,7 +448,7 @@
             touch-action: manipulation;
         }
         .toggle-controls-btn:hover {
-            background: rgba(30, 41, 59, 0.9);
+            background: rgba(30, 41, 59, 1);
             color: #fff;
         }
         .toggle-controls-btn i {
@@ -518,7 +523,7 @@
         }
         .zoom-hint {
             position: fixed;
-            bottom: 80px;
+            bottom: 85px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0,0,0,0.7);
@@ -537,7 +542,7 @@
             display: block;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE MOBILE STYLES ===== */
         @media (max-width: 640px) {
             .header {
                 height: 44px;
@@ -557,52 +562,46 @@
                 padding: 2px 6px;
                 font-size: 9px;
             }
+            
+            /* Responsive Grid Vertical Flow */
             .video-grid {
-                padding: 6px;
-                gap: 6px;
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                grid-auto-rows: minmax(100px, 1fr);
-            }
-            .video-grid.zoomed .video-card:not(.active-zoom) {
-                display: none;
-            }
-            .video-grid.zoomed .video-card.active-zoom {
-                min-height: 60vh;
+                padding: 8px;
+                padding-bottom: 90px;
+                gap: 8px;
+                grid-template-columns: 1fr;
+                grid-auto-rows: max-content;
             }
             .video-card {
                 border-radius: 10px;
-                min-height: 90px;
+                min-height: 180px;
+                aspect-ratio: 16/9;
             }
             .participant-label {
-                font-size: 9px;
-                padding: 2px 8px;
-                bottom: 5px;
-                left: 5px;
+                font-size: 10px;
+                padding: 3px 8px;
+                bottom: 6px;
+                left: 6px;
             }
             
-            /* Controls */
+            /* Controls adjustment for smaller screens */
             .controls-wrapper {
-                bottom: 10px;
+                bottom: 12px;
                 gap: 6px;
             }
             .controls-bar {
-                padding: 6px 12px;
-                gap: 6px;
+                padding: 8px 12px;
+                gap: 8px;
                 border-radius: 40px;
             }
-            .controls-bar.compact {
-                padding: 4px 8px;
-                gap: 3px;
+            .btn-ctrl {
+                width: 48px;
+                height: 48px;
+                font-size: 17px;
             }
             .controls-bar.compact .btn-ctrl {
-                width: 32px;
-                height: 32px;
-                font-size: 11px;
-            }
-            .btn-ctrl {
-                width: 40px;
-                height: 40px;
-                font-size: 15px;
+                width: 36px;
+                height: 36px;
+                font-size: 13px;
             }
             
             /* Toggle button */
@@ -614,41 +613,38 @@
                 padding: 3px 10px;
             }
             
-            /* Chat sidebar - full width */
+            /* Chat sidebar on mobile */
             .chat-sidebar {
                 max-width: 100%;
                 width: 100%;
             }
             .chat-messages {
-                max-height: calc(100vh - 160px);
-                min-height: 150px;
-                padding: 8px 10px;
+                padding: 10px;
             }
             .chat-input-area {
-                padding: 6px 10px;
+                padding: 8px 10px;
             }
             .chat-input-area input {
                 font-size: 14px;
                 padding: 10px 14px;
-                min-height: 42px;
+                min-height: 44px;
             }
             .chat-input-area button {
-                min-height: 42px;
-                min-width: 46px;
+                min-height: 44px;
+                min-width: 48px;
                 font-size: 16px;
-                padding: 0 16px;
             }
             .modal-card {
                 padding: 20px 16px;
             }
             .avatar-placeholder i {
-                font-size: 28px;
+                font-size: 32px;
             }
             .avatar-placeholder {
                 font-size: 11px;
             }
             .zoom-hint {
-                bottom: 72px;
+                bottom: 78px;
                 font-size: 10px;
                 padding: 4px 12px;
             }
@@ -656,50 +652,33 @@
 
         @media (max-width: 400px) {
             .video-grid {
-                padding: 4px;
-                gap: 4px;
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-                grid-auto-rows: minmax(80px, 1fr);
+                padding: 6px;
+                padding-bottom: 85px;
+                gap: 6px;
+            }
+            .video-card {
+                min-height: 150px;
             }
             .controls-bar {
-                padding: 4px 8px;
-                gap: 4px;
-            }
-            .controls-bar.compact {
-                padding: 3px 6px;
-                gap: 2px;
-            }
-            .controls-bar.compact .btn-ctrl {
-                width: 28px;
-                height: 28px;
-                font-size: 10px;
+                padding: 6px 10px;
+                gap: 6px;
             }
             .btn-ctrl {
-                width: 36px;
-                height: 36px;
-                font-size: 13px;
+                width: 44px;
+                height: 44px;
+                font-size: 15px;
+            }
+            .controls-bar.compact .btn-ctrl {
+                width: 32px;
+                height: 32px;
+                font-size: 11px;
             }
             .toggle-controls-btn {
                 font-size: 9px;
                 padding: 2px 8px;
             }
-            .chat-messages {
-                max-height: calc(100vh - 150px);
-                min-height: 120px;
-            }
-            .chat-input-area input {
-                font-size: 13px;
-                padding: 8px 12px;
-                min-height: 38px;
-            }
-            .chat-input-area button {
-                min-height: 38px;
-                min-width: 40px;
-                font-size: 14px;
-                padding: 0 12px;
-            }
             .zoom-hint {
-                bottom: 64px;
+                bottom: 70px;
                 font-size: 9px;
                 padding: 3px 10px;
             }
@@ -708,7 +687,7 @@
         /* Scrollbar styling */
         .chat-messages::-webkit-scrollbar,
         .video-grid::-webkit-scrollbar {
-            width: 3px;
+            width: 4px;
         }
         .chat-messages::-webkit-scrollbar-track,
         .video-grid::-webkit-scrollbar-track {
@@ -880,11 +859,15 @@
                 }
             });
 
-            // ---- MEDIA ----
+            // ---- MEDIA WITH CLEAR MIC AUDIO CONSTRAINTS ----
             async function initMedia() {
                 try {
                     localStream = await navigator.mediaDevices.getUserMedia({
-                        audio: true,
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true
+                        },
                         video: true
                     });
                     localStream.getAudioTracks().forEach(t => t.enabled = false);
@@ -940,7 +923,7 @@
                 };
             }
 
-            // ---- PEER ----
+            // ---- PEER CONNECTION ----
             function createPeerConnection(targetId, targetName, isInitiator) {
                 if (peerConnections.has(targetId)) return peerConnections.get(targetId);
                 const pc = new RTCPeerConnection(rtcConfig);
@@ -982,9 +965,12 @@
                             const offer = await pc.createOffer();
                             await pc.setLocalDescription(offer);
                             sendSignal(targetId, { type: "offer", sdp: pc.localDescription });
-                        } catch (e) { console.error("Offer error:", e); }
+                        } catch (e) {
+                            console.error("Offer error:", e);
+                        }
                     };
                 }
+
                 return pc;
             }
 
@@ -993,18 +979,16 @@
                 if (!pc) {
                     pc = createPeerConnection(senderId, "Participant", false);
                 }
-                try {
-                    if (data.type === "offer") {
-                        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                        const answer = await pc.createAnswer();
-                        await pc.setLocalDescription(answer);
-                        sendSignal(senderId, { type: "answer", sdp: pc.localDescription });
-                    } else if (data.type === "answer") {
-                        await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
-                    } else if (data.type === "candidate") {
-                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-                    }
-                } catch (e) { console.warn("Signal error:", e); }
+                if (data.type === "offer") {
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    sendSignal(senderId, { type: "answer", sdp: pc.localDescription });
+                } else if (data.type === "answer") {
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.sdp));
+                } else if (data.type === "candidate") {
+                    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
             }
 
             function sendSignal(targetId, data) {
@@ -1012,12 +996,13 @@
                     socket.send(JSON.stringify({
                         type: "signal",
                         target: targetId,
+                        sender: userId,
                         data: data
                     }));
                 }
             }
 
-            // ---- DOM ----
+            // ---- UI HELPERS ----
             function createParticipantTile(id, name) {
                 const tile = document.createElement("div");
                 tile.id = `tile_${id}`;
@@ -1026,7 +1011,7 @@
                 tile.dataset.userName = name;
                 tile.innerHTML = `
                     <div class="avatar-placeholder">
-                        <i class="fa-solid fa-user-large"></i>
+                        <i class="fa-solid fa-user"></i>
                         <span>${name}</span>
                     </div>
                     <video autoplay playsinline></video>
@@ -1034,192 +1019,172 @@
                         <i class="fa-solid fa-user"></i>
                         <span>${name}</span>
                     </div>
-                    <div id="hand_${id}" class="hand-badge">
+                    <div class="hand-badge">
                         <i class="fa-solid fa-hand"></i>
                     </div>
                 `;
-                tile.addEventListener("click", function(e) {
-                    e.stopPropagation();
-                    toggleZoom(this.id);
-                });
+                tile.addEventListener("click", () => toggleZoom(tile));
                 videoGrid.appendChild(tile);
+                updateZoomHint();
                 return tile;
             }
 
             function removeParticipantTile(id) {
+                const tile = document.getElementById(`tile_${id}`);
+                if (tile) tile.remove();
                 if (peerConnections.has(id)) {
                     peerConnections.get(id).close();
                     peerConnections.delete(id);
                 }
-                const tile = document.getElementById(`tile_${id}`);
-                if (tile) {
-                    if (isZoomed && zoomedTileId === id) {
-                        exitZoom();
+                if (zoomedTileId === `tile_${id}`) {
+                    resetZoom();
+                }
+                updateZoomHint();
+            }
+
+            function toggleHandUI(id, raised) {
+                const targetTile = id === userId ? localTile : document.getElementById(`tile_${id}`);
+                if (targetTile) {
+                    const badge = targetTile.querySelector(".hand-badge");
+                    if (badge) {
+                        badge.classList.toggle("show", raised);
                     }
-                    tile.remove();
                 }
             }
 
-            function toggleHandUI(senderId, raised) {
-                if (senderId === userId) return;
-                const badge = document.getElementById(`hand_${senderId}`);
-                if (badge) {
-                    badge.classList.toggle("show", raised);
+            // ---- ZOOM FUNCTIONALITY ----
+            localTile.addEventListener("click", () => toggleZoom(localTile));
+
+            function toggleZoom(tile) {
+                if (isZoomed && zoomedTileId === tile.id) {
+                    resetZoom();
+                } else {
+                    if (isZoomed) resetZoom();
+                    isZoomed = true;
+                    zoomedTileId = tile.id;
+                    videoGrid.classList.add("zoomed");
+                    tile.classList.add("active-zoom");
                 }
             }
 
-            // ---- ZOOM ----
-            function toggleZoom(tileId) {
-                if (!tileId) return;
-                if (isZoomed && zoomedTileId === tileId) {
-                    exitZoom();
-                    return;
-                }
-                if (isZoomed) {
-                    const currentTile = document.getElementById(zoomedTileId);
-                    if (currentTile) currentTile.classList.remove("active-zoom");
-                }
-                const tile = document.getElementById(tileId);
-                if (!tile) return;
-                tile.classList.add("active-zoom");
-                videoGrid.classList.add("zoomed");
-                isZoomed = true;
-                zoomedTileId = tileId;
-                zoomHint.classList.add("show");
-                zoomHint.textContent = "Bonyeza tena kurudi kwenye gridi";
-            }
-
-            function exitZoom() {
-                const tile = document.getElementById(zoomedTileId);
-                if (tile) tile.classList.remove("active-zoom");
-                videoGrid.classList.remove("zoomed");
+            function resetZoom() {
                 isZoomed = false;
                 zoomedTileId = null;
-                zoomHint.classList.remove("show");
+                videoGrid.classList.remove("zoomed");
+                document.querySelectorAll(".video-card").forEach(c => c.classList.remove("active-zoom"));
             }
 
-            videoGrid.addEventListener("click", function(e) {
-                if (e.target === this && isZoomed) {
-                    exitZoom();
-                }
-            });
-
-            // ---- CONTROLS ----
-            cameraBtn.onclick = () => {
-                if (!localStream) return;
-                const track = localStream.getVideoTracks()[0];
-                if (track) {
-                    isCameraOn = !isCameraOn;
-                    track.enabled = isCameraOn;
-                    cameraBtn.classList.toggle("off", !isCameraOn);
-                    cameraBtn.classList.toggle("active", isCameraOn);
-                    cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
-                    localAvatar.style.display = isCameraOn ? "none" : "flex";
-                }
-            };
-
-            micBtn.onclick = () => {
-                if (!localStream) return;
-                const track = localStream.getAudioTracks()[0];
-                if (track) {
-                    isMicOn = !isMicOn;
-                    track.enabled = isMicOn;
-                    micBtn.classList.toggle("off", !isMicOn);
-                    micBtn.classList.toggle("active", isMicOn);
-                    micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
-                }
-            };
-
-            handBtn.onclick = () => {
-                isHandRaised = !isHandRaised;
-                handBtn.classList.toggle("active", isHandRaised);
-                localHand.classList.toggle("show", isHandRaised);
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({
-                        type: "raise-hand",
-                        raised: isHandRaised
-                    }));
-                }
-            };
-
-            // ---- CHAT ----
-            chatBtn.onclick = () => {
-                chatSidebar.classList.toggle("open");
-                if (window.innerWidth <= 640 && !isCompact) {
-                    isCompact = true;
-                    controlsBar.classList.add("compact");
-                    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-right"></i> Expand';
-                }
-            };
-            closeChatBtn.onclick = () => {
-                chatSidebar.classList.remove("open");
-                if (window.innerWidth <= 640 && isCompact) {
-                    isCompact = false;
-                    controlsBar.classList.remove("compact");
-                    toggleBtn.innerHTML = '<i class="fa-solid fa-chevron-left"></i> Compact';
-                }
-            };
-
-            sendMsgBtn.onclick = sendChat;
-            msgInput.onkeypress = (e) => { if (e.key === "Enter") sendChat(); };
-
-            function sendChat() {
-                const text = msgInput.value.trim();
-                if (!text) return;
-                if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({ type: "chat", text: text }));
-                    appendChatMessage(userName, text, true);
-                    msgInput.value = "";
+            function updateZoomHint() {
+                const tilesCount = videoGrid.children.length;
+                if (tilesCount > 1) {
+                    zoomHint.classList.add("show");
                 } else {
-                    appendChatMessage("System", "Tafadhali subiri unganisho.", false);
+                    zoomHint.classList.remove("show");
                 }
             }
 
-            function appendChatMessage(sender, text, isSelf = false) {
-                const div = document.createElement("div");
-                div.className = `msg-box${isSelf ? ' self' : ''}`;
+            // ---- CHAT CONTROLS ----
+            function appendChatMessage(sender, text, isSelf) {
                 const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                div.innerHTML = `
+                const msgEl = document.createElement("div");
+                msgEl.className = `msg-box ${isSelf ? 'self' : ''}`;
+                msgEl.innerHTML = `
                     <div class="msg-sender"><i class="fa-solid fa-user"></i> ${sender}</div>
-                    <div>${text}</div>
+                    <div class="msg-text"></div>
                     <div class="msg-time">${time}</div>
                 `;
-                chatMessages.appendChild(div);
+                msgEl.querySelector(".msg-text").textContent = text;
+                chatMessages.appendChild(msgEl);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
-            // ---- LEAVE ----
-            endBtn.onclick = () => {
-                if (localStream) localStream.getTracks().forEach(t => t.stop());
-                if (socket) socket.close();
-                window.location.reload();
-            };
+            function sendMessage() {
+                const text = msgInput.value.trim();
+                if (!text) return;
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: "chat",
+                        room: room,
+                        senderId: userId,
+                        senderName: userName,
+                        text: text
+                    }));
+                }
+                msgInput.value = "";
+            }
 
-            // ---- JOIN ----
-            joinBtn.onclick = async () => {
-                const val = usernameInput.value.trim();
-                if (val) userName = val;
-                localNameLabel.textContent = `${userName} (Wewe)`;
-                joinModal.style.display = "none";
-                await initMedia();
-                cameraBtn.classList.add("off");
-                cameraBtn.innerHTML = '<i class="fa-solid fa-video-slash"></i>';
-                micBtn.classList.add("off");
-                micBtn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-                localAvatar.style.display = "flex";
-                connectSocket();
-            };
+            sendMsgBtn.addEventListener("click", sendMessage);
+            msgInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendMessage();
+            });
+
+            chatBtn.addEventListener("click", () => {
+                chatSidebar.classList.toggle("open");
+                chatBtn.classList.toggle("active", chatSidebar.classList.contains("open"));
+            });
+
+            closeChatBtn.addEventListener("click", () => {
+                chatSidebar.classList.remove("open");
+                chatBtn.classList.remove("active");
+            });
+
+            // ---- MEDIA CONTROL BUTTONS ----
+            micBtn.addEventListener("click", () => {
+                isMicOn = !isMicOn;
+                if (localStream) {
+                    localStream.getAudioTracks().forEach(t => t.enabled = isMicOn);
+                }
+                micBtn.classList.toggle("off", !isMicOn);
+                micBtn.innerHTML = isMicOn ? '<i class="fa-solid fa-microphone"></i>' : '<i class="fa-solid fa-microphone-slash"></i>';
+            });
+
+            cameraBtn.addEventListener("click", () => {
+                isCameraOn = !isCameraOn;
+                if (localStream) {
+                    localStream.getVideoTracks().forEach(t => t.enabled = isCameraOn);
+                }
+                cameraBtn.classList.toggle("off", !isCameraOn);
+                cameraBtn.innerHTML = isCameraOn ? '<i class="fa-solid fa-video"></i>' : '<i class="fa-solid fa-video-slash"></i>';
+                localAvatar.style.display = isCameraOn ? "none" : "flex";
+            });
+
+            handBtn.addEventListener("click", () => {
+                isHandRaised = !isHandRaised;
+                handBtn.classList.toggle("active", isHandRaised);
+                toggleHandUI(userId, isHandRaised);
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({
+                        type: "raise-hand",
+                        room: room,
+                        senderId: userId,
+                        raised: isHandRaised
+                    }));
+                }
+            });
+
+            endBtn.addEventListener("click", () => {
+                if (confirm("Je, unataka kuondoka kwenye darasa?")) {
+                    window.location.reload();
+                }
+            });
+
+            // ---- JOIN CLASSROOM ----
+            joinBtn.addEventListener("click", async () => {
+                const name = usernameInput.value.trim();
+                if (name) {
+                    userName = name;
+                    localNameLabel.textContent = userName + " (Wewe)";
+                    localTile.dataset.userName = userName;
+                    joinModal.style.display = "none";
+                    await initMedia();
+                    connectSocket();
+                }
+            });
 
             usernameInput.addEventListener("keypress", (e) => {
                 if (e.key === "Enter") joinBtn.click();
             });
 
-            localTile.addEventListener("click", function(e) {
-                e.stopPropagation();
-                toggleZoom(this.id);
-            });
-
-            console.log("Live Classroom initialized successfully.");
         })();
     </script>
 </body>
